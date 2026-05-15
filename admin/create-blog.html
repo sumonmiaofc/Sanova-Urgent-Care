@@ -4,7 +4,8 @@
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Blog Editor | Sanova Admin</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdn.tiny.cloud/1/r8k9g74re1jxkv97s8tlcgtg4ysjx3on59ys3jzngkanb3du/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+<link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet"/>
+<script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="../css/admin.css"/>
 <style>
@@ -55,11 +56,8 @@
         </div>
 
         <!-- Editor -->
-        <div class="card" style="margin-bottom:1.25rem;">
-          <div class="card-body" style="padding:0;">
-            <textarea id="postContent"></textarea>
-          </div>
-        </div>
+        <div id="quillEditor" style="height:480px;"></div>
+<textarea id="postContent" style="display:none;"></textarea>
 
         <!-- Excerpt -->
         <div class="card" style="margin-bottom:1.25rem;">
@@ -281,12 +279,7 @@ async function loadPost(id){
   document.getElementById('dangerCard').style.display='block';
   document.querySelectorAll('.nav-link[data-page="blogs"]').forEach(l=>l.classList.add('active'));
   updateStatusUI();updateSeoPreview();
-  const check=setInterval(()=>{
-    if(tinymce.get('postContent')){
-      tinymce.get('postContent').setContent(p.content||'');
-      clearInterval(check);
-    }
-  },300);
+  setTimeout(()=>{ quill.root.innerHTML=p.content||''; },400);
 }
 
 function autoSlug(){
@@ -385,12 +378,11 @@ async function save(action){
   if(!title){showToast('Title is required','error');saving=false;draftBtn.disabled=pubBtn.disabled=false;return;}
   if(!slug){showToast('Slug is required','error');saving=false;draftBtn.disabled=pubBtn.disabled=false;return;}
 
-  const editor=tinymce.get('postContent');
   const published=action==='publish'||document.getElementById('publishedToggle').checked;
   const data={
     title,slug,
     excerpt:document.getElementById('excerptInput').value.trim(),
-    content:editor?editor.getContent():'',
+    content:document.getElementById('quillEditor').querySelector('.ql-editor').innerHTML,
     featured_image:imgUrl||null,
     category_id:document.getElementById('categoryInput').value||null,
     author:document.getElementById('authorInput').value.trim()||'Sanova Medical Team',
@@ -432,6 +424,19 @@ async function deletePost(){
 }
 
 async function doLogout(){await sb.auth.signOut();location.href='login.html';}
+</script>
+
+<script>
+const quill = new Quill('#quillEditor', {
+  theme: 'snow',
+  modules: { toolbar: [
+    [{ header: [1,2,3,false] }],
+    ['bold','italic','underline'],
+    [{ list:'ordered' },{ list:'bullet' }],
+    ['link','image','blockquote','code-block'],
+    ['clean']
+  ]}
+});
 </script>
 </body>
 </html>
