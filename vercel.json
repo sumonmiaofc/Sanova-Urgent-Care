@@ -1,29 +1,67 @@
 {
-  "cleanUrls": true,
-  "trailingSlash": false,
+  "cleanUrls": false,
   "rewrites": [
-    { "source": "/home", "destination": "/index.html" },
-    { "source": "/blog", "destination": "/blog.html" },
-    { "source": "/blog/:slug", "destination": "/blog-post.html?slug=:slug" },
-    { "source": "/admin", "destination": "/admin/login.html" },
-    { "source": "/admin/login", "destination": "/admin/login.html" },
-    { "source": "/admin/dashboard", "destination": "/admin/dashboard.html" },
-    { "source": "/admin/blogs", "destination": "/admin/blogs.html" },
-    { "source": "/admin/create-blog", "destination": "/admin/create-blog.html" },
-    { "source": "/admin/categories", "destination": "/admin/categories.html" },
-    { "source": "/admin/analytics", "destination": "/admin/analytics.html" },
-    { "source": "/admin/settings", "destination": "/admin/settings.html" }
-  ],
-  "redirects": [
-    { "source": "/index.html", "destination": "/", "permanent": true }
+    {
+      "source": "/home",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/blog",
+      "destination": "/blog.html"
+    },
+    {
+      "source": "/admin",
+      "destination": "/admin/login.html"
+    },
+    {
+      "source": "/admin/",
+      "destination": "/admin/login.html"
+    },
+    {
+      "source": "/admin/login",
+      "destination": "/admin/login.html"
+    },
+    {
+      "source": "/admin/dashboard",
+      "destination": "/admin/dashboard.html"
+    },
+    {
+      "source": "/admin/blogs",
+      "destination": "/admin/blogs.html"
+    },
+    {
+      "source": "/admin/create-blog",
+      "destination": "/admin/create-blog.html"
+    },
+    {
+      "source": "/admin/categories",
+      "destination": "/admin/categories.html"
+    },
+    {
+      "source": "/admin/analytics",
+      "destination": "/admin/analytics.html"
+    },
+    {
+      "source": "/admin/settings",
+      "destination": "/admin/settings.html"
+    },
+    {
+      "source": "/blog/:slug",
+      "destination": "/blog-post.html?slug=:slug"
+    }
   ],
   "headers": [
     {
       "source": "/(.*)",
       "headers": [
-        { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
-        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        }
       ]
     }
   ]
