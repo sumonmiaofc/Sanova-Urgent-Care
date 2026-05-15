@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Analytics | Sanova Blog Admin</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="../css/admin.css"/>
+</head>
+<body>
+<div id="sidebarMount"></div>
+<div class="main">
+  <div class="topbar">
+    <div><div class="topbar-title">Analytics</div><div class="topbar-sub">Blog performance and traffic insights</div></div>
+    <div class="topbar-actions">
+      <select class="form-select" id="periodFilter" style="width:auto;" onchange="loadAnalytics()">
+        <option value="7">Last 7 Days</option>
+        <option value="30" selected>Last 30 Days</option>
+        <option value="90">Last 90 Days</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="page-body">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon si-teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div>
+        <div><div class="stat-num" id="sTotalViews">—</div><div class="stat-label">Total Views</div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon si-green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></div>
+        <div><div class="stat-num" id="sTotalVisitors">—</div><div class="stat-label">Unique Visitors</div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon si-amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+        <div><div class="stat-num" id="sAvgViews">—</div><div class="stat-label">Avg Views / Day</div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon si-purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg></div>
+        <div><div class="stat-num" id="sPublished">—</div><div class="stat-label">Published Posts</div></div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:2fr 1fr;gap:1.5rem;margin-bottom:1.5rem;">
+      <!-- Views over time -->
+      <div class="card">
+        <div class="card-header"><h3 id="chartTitle">Views Over Time</h3></div>
+        <div class="card-body">
+          <div class="chart-area" style="height:240px;"><canvas id="mainChart"></canvas></div>
+        </div>
+      </div>
+
+      <!-- Category breakdown -->
+      <div class="card">
+        <div class="card-header"><h3>By Category</h3></div>
+        <div class="card-body">
+          <div class="chart-area" style="height:240px;"><canvas id="catChart"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top performing posts -->
+    <div class="card">
+      <div class="card-header"><h3>Top Performing Posts</h3></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Post</th><th>Category</th><th>Views</th><th>Status</th><th>Published</th></tr></thead>
+          <tbody id="topTable"><tr><td colspan="6" style="text-align:center;padding:2rem;"><div class="spinner"></div></td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../js/config.js"></script>
+<script>
+let mainChartInst=null,catChartInst=null;
+
+(async()=>{
+  const session=await requireAuth();if(!session)return;
+  const r=await fetch('sidebar.html');
+  document.getElementById('sidebarMount').innerHTML=await r.text();
+  document.querySelectorAll('.nav-link[data-page="analytics"]').forEach(l=>l.classList.add('active'));
+  document.getElementById('sbEmail').textContent=session.user.email;
+  document.getElementById('sbAvatar').textContent=session.user.email.charAt(0).toUpperCase();
+  loadAnalytics();
+})();
+
+async function loadAnalytics(){
+  const days=parseInt(document.getElementById('periodFilter').value);
+  const since=new Date(Date.now()-days*86400000).toISOString();
+  document.getElementById('chartTitle').textContent=`Views — Last ${days} Days`;
+
+  const [{data:blogs},{data:analytics}]=await Promise.all([
+    sb.from('blogs').select('id,title,slug,views,published,created_at,published_at,categories(name)').order('views',{ascending:false}),
+    sb.from('analytics').select('views,visitors,created_at').gte('created_at',since)
+  ]);
+
+  const bl=blogs||[];const an=analytics||[];
+
+  // Stats
+  const totalViews=an.reduce((s,a)=>s+(a.views||0),0);
+  const totalVisitors=an.reduce((s,a)=>s+(a.visitors||0),0);
+  document.getElementById('sTotalViews').textContent=totalViews.toLocaleString();
+  document.getElementById('sTotalVisitors').textContent=totalVisitors.toLocaleString();
+  document.getElementById('sAvgViews').textContent=days?Math.round(totalViews/days).toLocaleString():'0';
+  document.getElementById('sPublished').textContent=bl.filter(b=>b.published).length;
+
+  // Main chart
+  const labels=[],data=[];
+  for(let i=days-1;i>=0;i--){
+    const d=new Date();d.setDate(d.getDate()-i);
+    const ds=d.toISOString().slice(0,10);
+    labels.push(d.toLocaleDateString('en-US',{month:'short',day:'numeric'}));
+    data.push(an.filter(a=>a.created_at.slice(0,10)===ds).reduce((s,a)=>s+(a.views||0),0));
+  }
+  const ctx1=document.getElementById('mainChart').getContext('2d');
+  const grad=ctx1.createLinearGradient(0,0,0,240);
+  grad.addColorStop(0,'rgba(13,110,122,.35)');grad.addColorStop(1,'rgba(13,110,122,0)');
+  if(mainChartInst)mainChartInst.destroy();
+  mainChartInst=new Chart(ctx1,{
+    type:'line',
+    data:{labels,datasets:[{label:'Views',data,borderColor:'#0d6e7a',backgroundColor:grad,borderWidth:2.5,tension:.4,pointRadius:3,pointBackgroundColor:'#0d6e7a',fill:true}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,grid:{color:'#f0f4f8'},ticks:{color:'#94a3b8',font:{size:11}}},x:{grid:{display:false},ticks:{color:'#94a3b8',font:{size:10},maxTicksLimit:8}}}}
+  });
+
+  // Category chart
+  const catMap={};
+  bl.forEach(b=>{const name=b.categories?.name||'Uncategorized';catMap[name]=(catMap[name]||0)+(b.views||0);});
+  const catLabels=Object.keys(catMap);const catData=Object.values(catMap);
+  const colors=['#0d6e7a','#1d4ed8','#15803d','#d97706','#7c3aed','#0891b2','#dc2626','#a16207'];
+  const ctx2=document.getElementById('catChart').getContext('2d');
+  if(catChartInst)catChartInst.destroy();
+  catChartInst=new Chart(ctx2,{
+    type:'doughnut',
+    data:{labels:catLabels,datasets:[{data:catData,backgroundColor:colors,borderWidth:0,hoverOffset:4}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:11},color:'#64788a',padding:10}}}}
+  });
+
+  // Top posts
+  const top=bl.filter(b=>b.published).slice(0,10);
+  document.getElementById('topTable').innerHTML=top.length?top.map((b,i)=>`
+    <tr>
+      <td style="font-weight:700;color:${i===0?'#0d6e7a':i===1?'#1d4ed8':i===2?'#d97706':'var(--muted)'}">#${i+1}</td>
+      <td><div class="post-title-cell">${b.title}<small>/${b.slug}</small></div></td>
+      <td style="color:var(--muted);font-size:.82rem;">${b.categories?.name||'—'}</td>
+      <td style="font-weight:700;color:var(--teal);">${(b.views||0).toLocaleString()}</td>
+      <td><span class="badge badge-${b.published?'published':'draft'}">${b.published?'Published':'Draft'}</span></td>
+      <td style="color:var(--muted);font-size:.82rem;">${fmtDateShort(b.published_at||b.created_at)}</td>
+    </tr>`).join(''):'<tr><td colspan="6"><div class="empty-state"><h3>No data yet</h3><p>Publish posts to see analytics</p></div></td></tr>';
+}
+
+async function doLogout(){await sb.auth.signOut();location.href='login.html';}
+</script>
+</body>
+</html>

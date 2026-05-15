@@ -3,8 +3,12 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Blog & Health Tips | Sanova Urgent Care Tucson</title>
+<title>Health Blog & Tips | Sanova Urgent Care Tucson</title>
 <meta name="description" content="Health tips, urgent care guides, IV therapy insights, and wellness advice from the Sanova medical team in Tucson, AZ."/>
+<meta property="og:title" content="Health Blog | Sanova Urgent Care"/>
+<meta property="og:description" content="Expert health advice from our board-certified providers in Tucson, AZ."/>
+<meta property="og:type" content="website"/>
+<link rel="canonical" href="https://yourdomain.com/blog.html"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link rel="icon" type="image/png" href="assets/favicon.png" sizes="32x32">
@@ -12,6 +16,83 @@
 <link rel="apple-touch-icon" href="assets/favicon.png">
 <link rel="stylesheet" href="css/style.css"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+/* Blog page extras */
+.blog-filters {
+  display: flex;
+  align-items: center;
+  gap: .85rem;
+  flex-wrap: wrap;
+  margin-bottom: 2.5rem;
+}
+.blog-search-wrap { position: relative; flex: 1; min-width: 220px; }
+.blog-search-wrap svg { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--c-muted); }
+.blog-search { padding-left: 2.75rem; width: 100%; padding-block: .75rem; border: 1.5px solid var(--c-border); border-radius: var(--r-full); font-family: inherit; font-size: .9rem; outline: none; transition: border-color .2s; }
+.blog-search:focus { border-color: var(--c-teal); }
+.cat-btn { padding: .5rem 1.1rem; border-radius: var(--r-full); border: 1.5px solid var(--c-border); background: #fff; font-size: .82rem; font-weight: 600; cursor: pointer; transition: all .2s; color: var(--c-muted); }
+.cat-btn:hover, .cat-btn.active { background: var(--c-teal); border-color: var(--c-teal); color: #fff; }
+
+/* Skeleton */
+.blog-skeleton { animation: shimmer 1.5s infinite; background: linear-gradient(90deg,#e2eaee 25%,#f0f4f8 50%,#e2eaee 75%); background-size: 200% 100%; border-radius: 12px; }
+@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+/* Featured card */
+.blog-featured {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  background: #fff;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid var(--c-border);
+  margin-bottom: 3rem;
+  box-shadow: 0 8px 32px rgba(0,0,0,.06);
+  transition: box-shadow .3s;
+}
+.blog-featured:hover { box-shadow: 0 16px 48px rgba(0,0,0,.1); }
+.blog-featured-img { aspect-ratio: 4/3; object-fit: cover; width: 100%; height: 100%; display: block; }
+.blog-featured-img-placeholder { aspect-ratio: 4/3; display: flex; align-items: center; justify-content: center; }
+.blog-featured-body { padding: 2.5rem; display: flex; flex-direction: column; justify-content: center; }
+.blog-featured-tag { display: inline-block; padding: .28rem .85rem; border-radius: 9999px; font-size: .72rem; font-weight: 700; margin-bottom: 1rem; }
+.blog-featured-title { font-family: 'Playfair Display', serif; font-size: clamp(1.4rem,2.5vw,1.85rem); font-weight: 700; color: var(--c-ink); line-height: 1.2; letter-spacing: -.02em; margin-bottom: .85rem; }
+.blog-featured-title a:hover { color: var(--c-teal); }
+.blog-featured-excerpt { color: var(--c-muted); font-size: .95rem; line-height: 1.7; margin-bottom: 1.5rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.blog-featured-meta { display: flex; gap: 1rem; flex-wrap: wrap; font-size: .8rem; color: var(--c-muted); margin-bottom: 1.5rem; }
+.blog-featured-meta span { display: flex; align-items: center; gap: .35rem; }
+
+/* Grid cards */
+.blog-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.5rem; }
+.blog-card { background: #fff; border: 1px solid var(--c-border); border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; transition: transform .25s, box-shadow .25s; }
+.blog-card:hover { transform: translateY(-5px); box-shadow: 0 16px 48px rgba(0,0,0,.1); }
+.blog-card-img { aspect-ratio: 16/10; object-fit: cover; width: 100%; display: block; }
+.blog-card-img-placeholder { aspect-ratio: 16/10; display: flex; align-items: center; justify-content: center; }
+.blog-card-body { padding: 1.4rem; flex: 1; display: flex; flex-direction: column; }
+.blog-card-tag { display: inline-block; padding: .22rem .7rem; border-radius: 9999px; font-size: .68rem; font-weight: 700; margin-bottom: .65rem; }
+.blog-card-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--c-ink); line-height: 1.3; margin-bottom: .5rem; letter-spacing: -.01em; }
+.blog-card-title a:hover { color: var(--c-teal); }
+.blog-card-excerpt { font-size: .85rem; color: var(--c-muted); line-height: 1.65; flex: 1; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 1rem; }
+.blog-card-meta { display: flex; align-items: center; justify-content: space-between; padding-top: .85rem; border-top: 1px solid var(--c-border); font-size: .75rem; color: var(--c-muted); flex-wrap: wrap; gap: .4rem; }
+.blog-card-read { display: inline-flex; align-items: center; gap: .3rem; color: var(--c-teal); font-weight: 600; font-size: .8rem; transition: gap .2s; }
+.blog-card-read:hover { gap: .5rem; }
+
+/* Pagination */
+.blog-pagination { display: flex; align-items: center; justify-content: center; gap: .5rem; margin-top: 3rem; }
+.pg-btn { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 10px; border: 1.5px solid var(--c-border); background: #fff; font-size: .875rem; font-weight: 600; cursor: pointer; transition: all .2s; color: var(--c-muted); }
+.pg-btn:hover { border-color: var(--c-teal); color: var(--c-teal); }
+.pg-btn.active { background: var(--c-teal); border-color: var(--c-teal); color: #fff; }
+.pg-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+.no-posts { text-align: center; padding: 4rem 2rem; }
+
+@media(max-width:1024px) { .blog-grid { grid-template-columns: repeat(2,1fr); } }
+@media(max-width:768px) {
+  .blog-featured { grid-template-columns: 1fr; }
+  .blog-featured-img, .blog-featured-img-placeholder { aspect-ratio: 16/9; }
+  .blog-featured-body { padding: 1.5rem; }
+  .blog-grid { grid-template-columns: 1fr; }
+  .blog-filters { gap: .5rem; }
+}
+</style>
 </head>
 <body data-page="blog">
 <div data-inc="partials/header.html"></div>
@@ -26,7 +107,7 @@
           <span style="width:20px;height:1.5px;background:rgba(255,255,255,.5);border-radius:2px;display:inline-block;"></span>Health Journal
         </span>
         <h1 class="page-hero-title">Tips, Guides &amp; <em>Health Insights</em></h1>
-        <p class="page-hero-desc">Practical health advice from the Sanova medical team. From urgent care FAQs to IV therapy guides and wellness tips — written for real people in Tucson.</p>
+        <p class="page-hero-desc">Practical health advice from the Sanova medical team — written for real people in Tucson.</p>
         <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-top:2rem;">
           <a href="tel:5202322525" class="btn btn-accent btn-lg">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" style="width:18px;height:18px;"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A2 2 0 014.11 2h3a2 2 0 012 1.72c.13.96.37 1.9.72 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.91.35 1.85.59 2.81.72A2 2 0 0122 16.92z"/></svg>
@@ -38,53 +119,60 @@
   </div>
 </section>
 
-<!-- BLOG POSTS — Dynamic from Supabase -->
-<section class="section bg-bg" id="blogPosts">
+<!-- BLOG CONTENT -->
+<section class="section" style="background:#f7fafc;">
   <div class="container">
-    <div class="section-head reveal">
-      <span class="label">Latest Articles</span>
-      <h2 class="h2" style="margin-top:.6rem;">Health Tips From Our Team</h2>
-    </div>
 
-    <!-- Loading state -->
-    <div id="blogLoading" style="text-align:center;padding:4rem;color:var(--c-muted);">
-      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin:0 auto 1rem;display:block;animation:spin 1s linear infinite;" stroke-linecap="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
-      Loading articles…
-    </div>
-
-    <!-- Empty state -->
-    <div id="blogEmpty" style="display:none;text-align:center;padding:4rem;">
-      <p style="color:var(--c-muted);font-size:1.1rem;">No articles published yet. Check back soon!</p>
-    </div>
-
-    <!-- Featured post (first published) -->
-    <div id="blogFeatured" style="display:none;margin-bottom:3rem;"></div>
-
-    <!-- Post grid -->
-    <div id="blogGrid" class="grid-3" style="display:none;"></div>
-  </div>
-</section>
-
-<!-- NEWSLETTER -->
-<section class="section">
-  <div class="container">
-    <div class="newsletter-wrap">
-      <div style="display:grid;grid-template-columns:1fr auto;gap:3rem;align-items:center;flex-wrap:wrap;">
-        <div>
-          <span class="label">Stay Informed</span>
-          <h2 class="h2" style="margin-top:.6rem;">Health Tips Delivered Monthly</h2>
-          <p style="margin-top:.75rem;color:var(--c-muted);">Get the latest articles, seasonal health alerts, and clinic updates. No spam — just useful content from our medical team.</p>
-          <form class="newsletter-form" aria-label="Newsletter signup">
-            <input type="email" placeholder="Your email address" required aria-label="Email address"/>
-            <button type="submit" class="btn btn-primary">Subscribe</button>
-          </form>
-        </div>
-        <div style="text-align:center;padding:2rem;">
-          <div style="font-family:var(--ff-serif);font-size:4rem;color:var(--c-teal);line-height:1;">📬</div>
-          <div style="font-size:.8rem;color:var(--c-muted);margin-top:.5rem;font-weight:500;">Join Tucson readers</div>
-        </div>
+    <!-- Filters -->
+    <div class="blog-filters">
+      <div class="blog-search-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input type="search" class="blog-search" id="blogSearch" placeholder="Search articles…" oninput="filterBlogs()"/>
+      </div>
+      <div id="catFilters" style="display:flex;gap:.5rem;flex-wrap:wrap;">
+        <button class="cat-btn active" data-cat="" onclick="setCat('')">All</button>
       </div>
     </div>
+
+    <!-- Loading skeletons -->
+    <div id="blogLoading">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;height:320px;margin-bottom:3rem;border-radius:20px;overflow:hidden;">
+        <div class="blog-skeleton" style="height:100%;"></div>
+        <div style="padding:2.5rem;background:#fff;display:flex;flex-direction:column;gap:1rem;">
+          <div class="blog-skeleton" style="height:20px;width:80px;border-radius:9999px;"></div>
+          <div class="blog-skeleton" style="height:28px;width:90%;"></div>
+          <div class="blog-skeleton" style="height:28px;width:70%;"></div>
+          <div class="blog-skeleton" style="height:14px;width:100%;"></div>
+          <div class="blog-skeleton" style="height:14px;width:85%;"></div>
+          <div class="blog-skeleton" style="height:14px;width:92%;"></div>
+        </div>
+      </div>
+      <div class="blog-grid">
+        ${[1,2,3].map(()=>`<div style="background:#fff;border-radius:16px;overflow:hidden;"><div class="blog-skeleton" style="aspect-ratio:16/10;"></div><div style="padding:1.4rem;display:flex;flex-direction:column;gap:.75rem;"><div class="blog-skeleton" style="height:16px;width:60px;border-radius:9999px;"></div><div class="blog-skeleton" style="height:20px;"></div><div class="blog-skeleton" style="height:14px;width:90%;"></div><div class="blog-skeleton" style="height:14px;width:80%;"></div></div></div>`).join('')}
+      </div>
+    </div>
+
+    <!-- No posts -->
+    <div id="blogEmpty" style="display:none;" class="no-posts">
+      <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="1.5" style="margin:0 auto 1rem;"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      <h3 style="font-size:1.1rem;color:var(--c-ink);margin-bottom:.5rem;">No articles found</h3>
+      <p style="color:var(--c-muted);font-size:.9rem;" id="emptyMsg">Check back soon for health tips from our team.</p>
+    </div>
+
+    <!-- Featured post -->
+    <div id="blogFeatured" style="display:none;"></div>
+
+    <!-- Section header -->
+    <div id="latestHeader" style="display:none;margin-bottom:1.75rem;">
+      <h2 style="font-size:1.35rem;font-weight:700;color:var(--c-ink);">Latest Articles</h2>
+    </div>
+
+    <!-- Grid -->
+    <div id="blogGrid" class="blog-grid" style="display:none;"></div>
+
+    <!-- Pagination -->
+    <div id="blogPagination" class="blog-pagination"></div>
+
   </div>
 </section>
 
@@ -92,7 +180,7 @@
 <section class="section cta-section">
   <div class="container cta-inner section-sm" style="padding-block:clamp(3rem,6vw,5rem);">
     <h2 class="cta-title reveal">Questions? We're <em>Open Now.</em></h2>
-    <p class="cta-sub reveal">Don't wait — walk into Sanova Urgent Care any time, Mon through Sat, 7AM to 7PM.</p>
+    <p class="cta-sub reveal">Walk in Mon–Sat, 7AM–7PM · 15883 N Oracle Rd, Tucson, AZ</p>
     <div class="cta-btns reveal">
       <a href="tel:5202322525" class="btn btn-accent btn-lg">Call 520-232-2525</a>
       <a href="contact.html" class="btn btn-outline-white btn-lg">Get Directions</a>
@@ -104,98 +192,148 @@
 <div data-inc="partials/faq.html"></div>
 <div data-inc="partials/footer.html"></div>
 <script src="js/main.js"></script>
-
-<style>
-@keyframes spin{to{transform:rotate(360deg)}}
-</style>
-
 <script>
 (function(){
-  const SUPABASE_URL='https://fogkdxevecwnqbmezdnu.supabase.co';
-  const SUPABASE_KEY='sb_publishable_JVJjN0WRgFOJSWSIQTQsIA_sFr8EJVO';
-  const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+  const SB_URL='https://fogkdxevecwnqbmezdnu.supabase.co';
+  const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZvZ2tkeGV2ZWN3bnFibWV6ZG51Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk5NDg0NzgsImV4cCI6MjA4NTUyNDQ3OH0.Gy8nDxKZFvPHrp2-r7bQILCn-zl0QmH5bb52tIVDOv0';
+  const sb=supabase.createClient(SB_URL,SB_KEY);
+
+  const PER_PAGE=9;
+  let allPosts=[],filtered=[],page=1,activeCat='';
+
+  function tagStyle(cat){
+    const colors={'IV Therapy':'#0d6e7a','Urgent Care':'#1d4ed8','Prevention':'#15803d','Arizona Health':'#b45309','Insurance & Billing':'#7c3aed','Wellness':'#0891b2','Physicals':'#a16207','Health Tips':'#0d6e7a'};
+    const bg=colors[cat]||'#0d6e7a';
+    return `style="background:${bg}20;color:${bg};"`;
+  }
 
   function fmtDate(d){
     if(!d)return'';
-    return new Date(d).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+    return new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
   }
 
-  function cardBg(category){
-    const map={
-      'IV Therapy':'linear-gradient(135deg,#073f47,#1a8fa8)',
-      'Urgent Care':'linear-gradient(135deg,#1d4ed8,#3b82f6)',
-      'Prevention':'linear-gradient(135deg,#065f46,#10b981)',
-      'Arizona Health':'linear-gradient(135deg,#d97706,#f59e0b)',
-      'Insurance & Billing':'linear-gradient(135deg,#4c1d95,#7c3aed)',
-      'Wellness':'linear-gradient(135deg,#065f46,#34d399)',
-      'Physicals':'linear-gradient(135deg,#b45309,#f59e0b)',
-    };
-    return map[category]||'linear-gradient(135deg,#073f47,#0d6e7a)';
+  function readTime(content){
+    const words=(content||'').replace(/<[^>]+>/g,'').split(/\s+/).length;
+    return Math.max(1,Math.round(words/200))+' min read';
+  }
+
+  function imgOrPlaceholder(img,catName,cls){
+    const bg=catName?({'IV Therapy':'#073f47,#1a8fa8','Urgent Care':'#1d4ed8,#3b82f6','Prevention':'#065f46,#10b981','Arizona Health':'#d97706,#f59e0b','Health Tips':'#073f47,#0d6e7a'}[catName]||'#073f47,#0d6e7a'):'#073f47,#0d6e7a';
+    if(img)return`<img src="${img}" class="${cls}" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'${cls.replace('img','img-placeholder')}\\' style=\\'background:linear-gradient(135deg,${bg});\\'>\\u00a0</div>'">`;
+    return`<div class="${cls.replace('img','img-placeholder')}" style="background:linear-gradient(135deg,${bg});"></div>`;
   }
 
   function featuredHTML(p){
-    const bg=p.cover_image?`url(${p.cover_image}) center/cover`:`${cardBg(p.category)}`;
-    return `<div class="blog-hero-card">
-      <div class="blog-hero-art" style="background:${bg};min-height:300px;"></div>
-      <div class="blog-hero-body">
-        <span class="blog-tag">${p.category||'Health Tips'} · Featured</span>
-        <h2 class="blog-title">
-          <a href="blog-post.html?slug=${p.slug}">${p.title}</a>
-        </h2>
-        <p class="blog-excerpt">${p.excerpt||''}</p>
-        <div class="blog-meta">
-          <span>${p.author||'Sanova Medical Team'}</span>
+    return`<a href="blog-post.html?slug=${p.slug}" class="blog-featured" style="text-decoration:none;">
+      ${imgOrPlaceholder(p.featured_image,p.categories?.name,'blog-featured-img')}
+      <div class="blog-featured-body">
+        <span class="blog-featured-tag" ${tagStyle(p.categories?.name)}>${p.categories?.name||'Health Tips'} · Featured</span>
+        <div class="blog-featured-title">${p.title}</div>
+        <div class="blog-featured-excerpt">${p.excerpt||''}</div>
+        <div class="blog-featured-meta">
+          <span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>${p.author||'Sanova Medical Team'}</span>
           <span>${fmtDate(p.published_at||p.created_at)}</span>
+          <span>${readTime(p.content)}</span>
         </div>
-        <a href="blog-post.html?slug=${p.slug}" class="btn btn-primary" style="margin-top:1.5rem;">Read Article →</a>
+        <span class="btn btn-primary btn-sm" style="width:fit-content;">Read Article →</span>
       </div>
-    </div>`;
+    </a>`;
   }
 
   function cardHTML(p){
-    const bg=p.cover_image?`url(${p.cover_image}) center/cover`:`${cardBg(p.category)}`;
-    return `<div class="blog-card">
-      <div class="blog-card-art" style="background:${bg};aspect-ratio:16/10;"></div>
+    return`<article class="blog-card">
+      <a href="blog-post.html?slug=${p.slug}">${imgOrPlaceholder(p.featured_image,p.categories?.name,'blog-card-img')}</a>
       <div class="blog-card-body">
-        <span class="blog-tag">${p.category||'Health Tips'}</span>
-        <h3 class="blog-card-title"><a href="blog-post.html?slug=${p.slug}">${p.title}</a></h3>
-        <p class="blog-card-excerpt">${p.excerpt||''}</p>
+        <span class="blog-card-tag" ${tagStyle(p.categories?.name)}>${p.categories?.name||'Health Tips'}</span>
+        <div class="blog-card-title"><a href="blog-post.html?slug=${p.slug}">${p.title}</a></div>
+        <div class="blog-card-excerpt">${p.excerpt||''}</div>
         <div class="blog-card-meta">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-          ${p.author||'Sanova Medical Team'} · ${fmtDate(p.published_at||p.created_at)}
+          <span>${fmtDate(p.published_at||p.created_at)} · ${readTime(p.content)}</span>
+          <a href="blog-post.html?slug=${p.slug}" class="blog-card-read">Read <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
         </div>
       </div>
-    </div>`;
+    </article>`;
   }
 
-  async function loadPosts(){
-    const {data,error}=await sb
-      .from('posts')
-      .select('id,title,slug,excerpt,author,category,cover_image,published_at,created_at')
-      .eq('status','published')
-      .order('published_at',{ascending:false});
+  function render(){
+    const start=(page-1)*PER_PAGE;
+    const rows=filtered.slice(start,start+PER_PAGE);
+    const rest=filtered.slice(1);
+    const restPage=rest.slice(start>0?start-1:0,(start>0?start-1:0)+PER_PAGE);
+
+    if(!filtered.length){
+      document.getElementById('blogFeatured').style.display='none';
+      document.getElementById('latestHeader').style.display='none';
+      document.getElementById('blogGrid').style.display='none';
+      document.getElementById('blogEmpty').style.display='block';
+      document.getElementById('emptyMsg').textContent=activeCat||document.getElementById('blogSearch').value?'No articles match your search.':'Check back soon for health tips from our team.';
+      document.getElementById('blogPagination').innerHTML='';
+      return;
+    }
+    document.getElementById('blogEmpty').style.display='none';
+
+    if(page===1&&filtered.length>0){
+      document.getElementById('blogFeatured').innerHTML=featuredHTML(filtered[0]);
+      document.getElementById('blogFeatured').style.display='block';
+      const gridPosts=filtered.slice(1,PER_PAGE+1);
+      document.getElementById('blogGrid').innerHTML=gridPosts.map(cardHTML).join('');
+      document.getElementById('blogGrid').style.display=gridPosts.length?'grid':'none';
+      document.getElementById('latestHeader').style.display=gridPosts.length?'block':'none';
+    } else {
+      document.getElementById('blogFeatured').style.display='none';
+      document.getElementById('latestHeader').style.display='none';
+      document.getElementById('blogGrid').innerHTML=rows.map(cardHTML).join('');
+      document.getElementById('blogGrid').style.display='grid';
+    }
+
+    // Pagination
+    const total=Math.ceil(filtered.length/PER_PAGE);
+    const pb=document.getElementById('blogPagination');
+    pb.innerHTML='';
+    if(total>1){
+      const prev=document.createElement('button');prev.className='pg-btn';prev.textContent='‹';prev.disabled=page===1;prev.onclick=()=>{page--;render();window.scrollTo({top:0,behavior:'smooth'});};pb.appendChild(prev);
+      for(let i=1;i<=total;i++){const b=document.createElement('button');b.className='pg-btn'+(i===page?' active':'');b.textContent=i;b.onclick=(i=>{return()=>{page=i;render();window.scrollTo({top:0,behavior:'smooth'});};})(i);pb.appendChild(b);}
+      const next=document.createElement('button');next.className='pg-btn';next.textContent='›';next.disabled=page===total;next.onclick=()=>{page++;render();window.scrollTo({top:0,behavior:'smooth'});};pb.appendChild(next);
+    }
+  }
+
+  window.filterBlogs=function(){
+    const q=document.getElementById('blogSearch').value.toLowerCase();
+    filtered=allPosts.filter(p=>{
+      const matchCat=!activeCat||p.categories?.id===activeCat;
+      const matchQ=!q||p.title?.toLowerCase().includes(q)||p.excerpt?.toLowerCase().includes(q)||p.categories?.name?.toLowerCase().includes(q);
+      return matchCat&&matchQ;
+    });
+    page=1;render();
+  };
+
+  window.setCat=function(id){
+    activeCat=id;
+    document.querySelectorAll('.cat-btn').forEach(b=>b.classList.toggle('active',b.dataset.cat===id));
+    filterBlogs();
+  };
+
+  async function load(){
+    const [{data:cats},{data:posts}]=await Promise.all([
+      sb.from('categories').select('id,name').order('name'),
+      sb.from('blogs').select('id,title,slug,excerpt,content,featured_image,author,published_at,created_at,categories(id,name)').eq('published',true).order('published_at',{ascending:false})
+    ]);
 
     document.getElementById('blogLoading').style.display='none';
 
-    if(error||!data||!data.length){
-      document.getElementById('blogEmpty').style.display='block';
-      return;
-    }
+    // Category filters
+    const cf=document.getElementById('catFilters');
+    (cats||[]).forEach(c=>{
+      const btn=document.createElement('button');
+      btn.className='cat-btn';btn.dataset.cat=c.id;btn.textContent=c.name;
+      btn.onclick=()=>setCat(c.id);cf.appendChild(btn);
+    });
 
-    // Featured = first post
-    const featured=data[0];
-    const rest=data.slice(1);
-
-    document.getElementById('blogFeatured').innerHTML=featuredHTML(featured);
-    document.getElementById('blogFeatured').style.display='block';
-
-    if(rest.length){
-      document.getElementById('blogGrid').innerHTML=rest.map(cardHTML).join('');
-      document.getElementById('blogGrid').style.display='grid';
-    }
+    allPosts=posts||[];filtered=[...allPosts];
+    render();
   }
 
-  loadPosts();
+  load();
 })();
 </script>
 </body>

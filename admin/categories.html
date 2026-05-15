@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Categories | Sanova Blog Admin</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="../css/admin.css"/>
+</head>
+<body>
+<div id="sidebarMount"></div>
+<div class="main">
+  <div class="topbar">
+    <div><div class="topbar-title">Categories</div><div class="topbar-sub">Manage blog post categories</div></div>
+  </div>
+  <div class="page-body">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;align-items:start;">
+
+      <!-- Add category -->
+      <div class="card">
+        <div class="card-header"><h3>Add New Category</h3></div>
+        <div class="card-body">
+          <div class="form-group">
+            <label class="form-label">Category Name <span>*</span></label>
+            <input type="text" class="form-input" id="catName" placeholder="e.g. Health Tips" oninput="autoSlugCat()"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Slug</label>
+            <input type="text" class="form-input" id="catSlug" placeholder="health-tips"/>
+            <div class="form-hint">Used in URLs. Auto-generated from name.</div>
+          </div>
+          <button class="btn btn-primary" onclick="saveCategory()">Add Category</button>
+        </div>
+      </div>
+
+      <!-- Categories list -->
+      <div class="card">
+        <div class="card-header"><h3>All Categories</h3></div>
+        <div id="catList" style="padding:.5rem 0;">
+          <div style="padding:2rem;text-align:center;"><div class="spinner"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../js/config.js"></script>
+<script>
+(async()=>{
+  const session=await requireAuth();if(!session)return;
+  const r=await fetch('sidebar.html');
+  document.getElementById('sidebarMount').innerHTML=await r.text();
+  document.querySelectorAll('.nav-link[data-page="categories"]').forEach(l=>l.classList.add('active'));
+  document.getElementById('sbEmail').textContent=session.user.email;
+  document.getElementById('sbAvatar').textContent=session.user.email.charAt(0).toUpperCase();
+  loadCats();
+})();
+
+function autoSlugCat(){
+  document.getElementById('catSlug').value=makeSlug(document.getElementById('catName').value);
+}
+
+async function loadCats(){
+  const {data,error}=await sb.from('categories').select('id,name,slug').order('name');
+  if(error){document.getElementById('catList').innerHTML='<div style="padding:1.5rem;color:var(--red);">Error loading categories</div>';return;}
+  const cats=data||[];
+
+  // Get post counts
+  const {data:counts}=await sb.from('blogs').select('category_id');
+  const countMap={};
+  (counts||[]).forEach(b=>{if(b.category_id)countMap[b.category_id]=(countMap[b.category_id]||0)+1;});
+
+  document.getElementById('catList').innerHTML=cats.length?cats.map(c=>`
+    <div style="display:flex;align-items:center;gap:.85rem;padding:.9rem 1.5rem;border-bottom:1px solid #f0f4f8;">
+      <div style="width:36px;height:36px;background:var(--teal-pale);border-radius:8px;display:grid;place-items:center;flex-shrink:0;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linecap="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+      </div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-weight:600;color:var(--ink);">${c.name}</div>
+        <div style="font-size:.75rem;color:var(--muted);">/${c.slug} · ${countMap[c.id]||0} posts</div>
+      </div>
+      <button class="btn btn-ghost btn-sm btn-icon" onclick="deleteCategory('${c.id}','${c.name.replace(/'/g,"\\'")}',${countMap[c.id]||0})" title="Delete">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
+      </button>
+    </div>`).join(''):'<div class="empty-state"><h3>No categories yet</h3><p>Add your first category above</p></div>';
+}
+
+async function saveCategory(){
+  const name=document.getElementById('catName').value.trim();
+  const slug=document.getElementById('catSlug').value.trim()||makeSlug(name);
+  if(!name){showToast('Name is required','error');return;}
+  const {error}=await sb.from('categories').insert({name,slug});
+  if(error){showToast('Error: '+error.message,'error');return;}
+  showToast('Category added!','success');
+  document.getElementById('catName').value='';
+  document.getElementById('catSlug').value='';
+  loadCats();
+}
+
+function deleteCategory(id,name,count){
+  const msg=count?`Delete "${name}"? ${count} post(s) will lose this category.`:`Delete category "${name}"?`;
+  confirmModal('Delete Category',msg,async()=>{
+    const {error}=await sb.from('categories').delete().eq('id',id);
+    if(!error){showToast('Category deleted','success');loadCats();}
+    else showToast('Error: '+error.message,'error');
+  });
+}
+
+async function doLogout(){await sb.auth.signOut();location.href='login.html';}
+</script>
+</body>
+</html>

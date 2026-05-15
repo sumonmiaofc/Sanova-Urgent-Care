@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>All Posts | Sanova Blog Admin</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="../css/admin.css"/>
+</head>
+<body>
+<div id="sidebarMount"></div>
+<div class="main">
+  <div class="topbar">
+    <div>
+      <div class="topbar-title">All Posts</div>
+      <div class="topbar-sub" id="postCount">Loading…</div>
+    </div>
+    <div class="topbar-actions">
+      <a href="create-blog.html" class="btn btn-primary">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        New Post
+      </a>
+    </div>
+  </div>
+
+  <div class="page-body">
+    <!-- Filter bar -->
+    <div class="filter-bar">
+      <div class="search-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input type="search" class="form-input search-input" id="searchInput" placeholder="Search posts…" oninput="filterAndRender()"/>
+      </div>
+      <select class="form-select" id="statusFilter" style="width:auto;" onchange="filterAndRender()">
+        <option value="all">All Status</option>
+        <option value="published">Published</option>
+        <option value="draft">Draft</option>
+      </select>
+      <select class="form-select" id="catFilter" style="width:auto;" onchange="filterAndRender()">
+        <option value="">All Categories</option>
+      </select>
+      <select class="form-select" id="sortFilter" style="width:auto;" onchange="filterAndRender()">
+        <option value="newest">Newest First</option>
+        <option value="oldest">Oldest First</option>
+        <option value="views">Most Views</option>
+        <option value="az">A–Z</option>
+      </select>
+    </div>
+
+    <!-- Table -->
+    <div class="card">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:40px;"><input type="checkbox" id="selectAll" onchange="toggleSelectAll()"/></th>
+              <th>Post</th>
+              <th>Category</th>
+              <th>Status</th>
+              <th>Views</th>
+              <th>Date</th>
+              <th style="width:140px;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="blogTable">
+            <tr><td colspan="7" style="text-align:center;padding:3rem;"><div class="spinner"></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <!-- Bulk actions -->
+      <div id="bulkBar" style="display:none;padding:1rem 1.5rem;border-top:1px solid var(--border);background:#f7fafc;display:flex;align-items:center;gap:.75rem;">
+        <span id="selectedCount" style="font-size:.85rem;font-weight:600;color:var(--muted);"></span>
+        <button class="btn btn-success btn-sm" onclick="bulkPublish()">Publish Selected</button>
+        <button class="btn btn-warn btn-sm" onclick="bulkDraft()">Set as Draft</button>
+        <button class="btn btn-danger btn-sm" onclick="bulkDelete()">Delete Selected</button>
+      </div>
+      <!-- Pagination -->
+      <div class="pagination" id="paginationBar"></div>
+    </div>
+  </div>
+</div>
+
+<script src="../js/config.js"></script>
+<script>
+let allBlogs=[];let filtered=[];let page=1;const PER_PAGE=15;
+
+(async()=>{
+  const session=await requireAuth();if(!session)return;
+
+  const r=await fetch('sidebar.html');
+  document.getElementById('sidebarMount').innerHTML=await r.text();
+  document.querySelectorAll('.nav-link[data-page="blogs"]').forEach(l=>l.classList.add('active'));
+  document.getElementById('sbEmail').textContent=session.user.email;
+  document.getElementById('sbAvatar').textContent=session.user.email.charAt(0).toUpperCase();
+
+  // Load categories for filter
+  const {data:cats}=await sb.from('categories').select('*').order('name');
+  const cf=document.getElementById('catFilter');
+  (cats||[]).forEach(c=>{const o=document.createElement('option');o.value=c.id;o.textContent=c.name;cf.appendChild(o);});
+
+  await loadBlogs();
+})();
+
+async function loadBlogs(){
+  const {data,error}=await sb.from('blogs').select('id,title,slug,published,views,created_at,updated_at,featured_image,categories(id,name)').order('created_at',{ascending:false});
+  if(error){document.getElementById('blogTable').innerHTML='<tr><td colspan="7"><div class="empty-state"><p>Error loading posts</p></div></td></tr>';return;}
+  allBlogs=data||[];
+  document.getElementById('nbPosts').textContent=allBlogs.length;
+  document.getElementById('postCount').textContent=`${allBlogs.length} total posts · ${allBlogs.filter(b=>b.published).length} published`;
+  filterAndRender();
+}
+
+function filterAndRender(){
+  const q=document.getElementById('searchInput').value.toLowerCase();
+  const status=document.getElementById('statusFilter').value;
+  const cat=document.getElementById('catFilter').value;
+  const sort=document.getElementById('sortFilter').value;
+  filtered=allBlogs.filter(b=>{
+    if(q&&!b.title?.toLowerCase().includes(q)&&!b.slug?.includes(q))return false;
+    if(status==='published'&&!b.published)return false;
+    if(status==='draft'&&b.published)return false;
+    if(cat&&b.categories?.id!==cat)return false;
+    return true;
+  });
+  if(sort==='oldest')filtered.sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));
+  else if(sort==='views')filtered.sort((a,b)=>(b.views||0)-(a.views||0));
+  else if(sort==='az')filtered.sort((a,b)=>a.title?.localeCompare(b.title));
+  page=1;renderTable();renderPagination();
+}
+
+function renderTable(){
+  const start=(page-1)*PER_PAGE;
+  const rows=filtered.slice(start,start+PER_PAGE);
+  document.getElementById('blogTable').innerHTML=rows.length?rows.map(b=>`
+    <tr>
+      <td><input type="checkbox" class="row-check" value="${b.id}" onchange="updateBulkBar()"/></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:.85rem;">
+          ${b.featured_image
+            ?`<img src="${b.featured_image}" class="post-thumb" alt=""/>`
+            :`<div class="post-thumb-placeholder"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0d6e7a" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>`}
+          <div class="post-title-cell">${b.title||'Untitled'}<small>/${b.slug}</small></div>
+        </div>
+      </td>
+      <td style="color:var(--muted);font-size:.82rem;">${b.categories?.name||'—'}</td>
+      <td><span class="badge badge-${b.published?'published':'draft'}"><span class="badge-dot"></span>${b.published?'Published':'Draft'}</span></td>
+      <td style="font-weight:600;color:var(--teal);">${(b.views||0).toLocaleString()}</td>
+      <td style="color:var(--muted);font-size:.82rem;">${fmtDateShort(b.created_at)}</td>
+      <td>
+        <div style="display:flex;gap:.4rem;">
+          <a href="create-blog.html?id=${b.id}" class="btn btn-outline btn-sm">Edit</a>
+          <button class="btn btn-sm ${b.published?'btn-warn':'btn-success'}" onclick="togglePublish('${b.id}',${b.published})">${b.published?'Unpublish':'Publish'}</button>
+          <button class="btn btn-ghost btn-sm btn-icon" onclick="delPost('${b.id}','${b.title?.replace(/'/g,"\\'")}')" title="Delete">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+          </button>
+        </div>
+      </td>
+    </tr>`).join(''):`<tr><td colspan="7"><div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg><h3>No posts found</h3><p>Try a different search or filter</p></div></td></tr>`;
+}
+
+function renderPagination(){
+  const total=Math.ceil(filtered.length/PER_PAGE);
+  const bar=document.getElementById('paginationBar');
+  if(total<=1){bar.style.display='none';return;}
+  bar.style.display='flex';
+  const pages=[];
+  pages.push(`<button class="page-btn" onclick="goPage(${page-1})" ${page===1?'disabled':''}>‹</button>`);
+  for(let i=1;i<=total;i++){
+    if(i===1||i===total||Math.abs(i-page)<=1)pages.push(`<button class="page-btn ${i===page?'active':''}" onclick="goPage(${i})">${i}</button>`);
+    else if(Math.abs(i-page)===2)pages.push('<span style="display:grid;place-items:center;width:34px;color:var(--muted);">…</span>');
+  }
+  pages.push(`<button class="page-btn" onclick="goPage(${page+1})" ${page===total?'disabled':''}>›</button>`);
+  bar.innerHTML=pages.join('');
+}
+
+function goPage(p){if(p<1)return;const total=Math.ceil(filtered.length/PER_PAGE);if(p>total)return;page=p;renderTable();renderPagination();}
+
+async function togglePublish(id,current){
+  const {error}=await sb.from('blogs').update({published:!current,published_at:!current?new Date().toISOString():null}).eq('id',id);
+  if(!error){showToast(!current?'Post published!':'Post set to draft','success');await loadBlogs();}
+  else showToast('Error: '+error.message,'error');
+}
+
+function delPost(id,title){
+  confirmModal('Delete Post',`Delete "${title}"? This cannot be undone.`,async()=>{
+    const {error}=await sb.from('blogs').delete().eq('id',id);
+    if(!error){showToast('Post deleted','success');await loadBlogs();}
+    else showToast('Error: '+error.message,'error');
+  });
+}
+
+function toggleSelectAll(){
+  const checked=document.getElementById('selectAll').checked;
+  document.querySelectorAll('.row-check').forEach(c=>c.checked=checked);
+  updateBulkBar();
+}
+
+function getSelected(){return Array.from(document.querySelectorAll('.row-check:checked')).map(c=>c.value);}
+
+function updateBulkBar(){
+  const sel=getSelected();
+  const bar=document.getElementById('bulkBar');
+  if(sel.length){bar.style.display='flex';document.getElementById('selectedCount').textContent=`${sel.length} selected`;}
+  else bar.style.display='none';
+}
+
+async function bulkPublish(){const ids=getSelected();if(!ids.length)return;await sb.from('blogs').update({published:true,published_at:new Date().toISOString()}).in('id',ids);showToast(`${ids.length} posts published`,'success');await loadBlogs();}
+async function bulkDraft(){const ids=getSelected();if(!ids.length)return;await sb.from('blogs').update({published:false}).in('id',ids);showToast(`${ids.length} posts set to draft`,'success');await loadBlogs();}
+function bulkDelete(){const ids=getSelected();if(!ids.length)return;confirmModal('Delete Posts',`Delete ${ids.length} posts? This cannot be undone.`,async()=>{await sb.from('blogs').delete().in('id',ids);showToast(`${ids.length} posts deleted`,'success');await loadBlogs();});}
+
+async function doLogout(){await sb.auth.signOut();location.href='login.html';}
+</script>
+</body>
+</html>

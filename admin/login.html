@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Admin Login | Sanova Blog</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;background:linear-gradient(135deg,#073f47 0%,#0d6e7a 60%,#1a8fa8 100%);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1rem;position:relative;overflow:hidden;}
+body::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 80% 20%,rgba(92,184,138,.15),transparent 50%),radial-gradient(circle at 20% 80%,rgba(26,143,168,.2),transparent 50%);pointer-events:none;}
+.card{background:#fff;border-radius:20px;padding:2.5rem;width:100%;max-width:420px;box-shadow:0 24px 80px rgba(0,0,0,.25);position:relative;z-index:1;}
+.logo-wrap{text-align:center;margin-bottom:2rem;}
+.logo-img{height:52px;width:auto;margin:0 auto .75rem;display:block;object-fit:contain;}
+.logo-icon{width:56px;height:56px;background:linear-gradient(135deg,#073f47,#0d6e7a);border-radius:14px;display:grid;place-items:center;margin:0 auto .75rem;}
+.logo-icon svg{width:28px;height:28px;color:#fff;}
+.logo-wrap h1{font-size:1.35rem;font-weight:800;color:#0f1923;letter-spacing:-.02em;}
+.logo-wrap p{font-size:.85rem;color:#64788a;margin-top:.3rem;}
+.divider{display:flex;align-items:center;gap:.75rem;margin:1.25rem 0;color:#94a3b8;font-size:.78rem;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:#e2eaee;}
+label{display:block;font-size:.82rem;font-weight:600;color:#1e2d3a;margin-bottom:.4rem;}
+.input-wrap{position:relative;margin-bottom:1rem;}
+.input-wrap svg{position:absolute;left:.9rem;top:50%;transform:translateY(-50%);width:16px;height:16px;color:#94a3b8;}
+input{width:100%;padding:.82rem 1rem .82rem 2.6rem;border:1.5px solid #e2eaee;border-radius:10px;font-size:.925rem;font-family:inherit;outline:none;transition:border-color .2s,box-shadow .2s;background:#fff;color:#0f1923;}
+input:focus{border-color:#0d6e7a;box-shadow:0 0 0 3px rgba(13,110,122,.1);}
+.show-pw{position:absolute;right:.9rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#94a3b8;display:flex;padding:0;}
+.show-pw:hover{color:#0d6e7a;}
+.btn{width:100%;padding:.9rem;background:linear-gradient(135deg,#073f47,#0d6e7a,#1a8fa8);color:#fff;border:none;border-radius:10px;font-size:.95rem;font-weight:700;cursor:pointer;transition:opacity .2s,transform .2s;margin-top:.25rem;letter-spacing:.01em;}
+.btn:hover:not(:disabled){opacity:.92;transform:translateY(-1px);}
+.btn:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+.error{background:#fef2f2;border:1px solid #fecaca;color:#dc2626;padding:.75rem 1rem;border-radius:8px;font-size:.85rem;margin-bottom:1rem;display:none;align-items:center;gap:.5rem;}
+.error svg{width:16px;height:16px;flex-shrink:0;}
+.back-link{display:block;text-align:center;margin-top:1.5rem;font-size:.82rem;color:rgba(255,255,255,.7);}
+.back-link a{color:#7de8b8;font-weight:600;}
+.back-link a:hover{color:#fff;}
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="logo-wrap">
+    <!-- Logo: shows PNG if exists, falls back to icon -->
+    <img src="../assets/logo.png" alt="Sanova" class="logo-img"
+         onerror="this.style.display='none';document.getElementById('logoIcon').style.display='grid';">
+    <div class="logo-icon" id="logoIcon" style="display:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 2v20M2 12h20"/></svg>
+    </div>
+    <h1>Welcome back</h1>
+    <p>Sign in to your blog dashboard</p>
+  </div>
+
+  <div class="error" id="errMsg">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <span id="errText"></span>
+  </div>
+
+  <div>
+    <label for="email">Email address</label>
+    <div class="input-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      <input type="email" id="email" placeholder="admin@sanovaucc.com" autocomplete="email"/>
+    </div>
+
+    <label for="password">Password</label>
+    <div class="input-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+      <input type="password" id="password" placeholder="••••••••" autocomplete="current-password"/>
+      <button class="show-pw" type="button" onclick="togglePw()" id="pwToggle" aria-label="Show password">
+        <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="16" height="16"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      </button>
+    </div>
+
+    <button class="btn" id="loginBtn" onclick="doLogin()">Sign in to Dashboard</button>
+  </div>
+</div>
+
+<p class="back-link"><a href="../index.html">← Back to website</a></p>
+
+<script>
+const SUPABASE_URL='https://fogkdxevecwnqbmezdnu.supabase.co';
+const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZvZ2tkeGV2ZWN3bnFibWV6ZG51Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk5NDg0NzgsImV4cCI6MjA4NTUyNDQ3OH0.Gy8nDxKZFvPHrp2-r7bQILCn-zl0QmH5bb52tIVDOv0';
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+
+// Already logged in?
+sb.auth.getSession().then(({data:{session}})=>{if(session)location.href='dashboard.html';});
+
+function togglePw(){
+  const inp=document.getElementById('password');
+  inp.type=inp.type==='password'?'text':'password';
+}
+
+function showErr(msg){
+  document.getElementById('errText').textContent=msg;
+  document.getElementById('errMsg').style.display='flex';
+}
+
+async function doLogin(){
+  const btn=document.getElementById('loginBtn');
+  const email=document.getElementById('email').value.trim();
+  const password=document.getElementById('password').value;
+  document.getElementById('errMsg').style.display='none';
+  if(!email||!password){showErr('Please enter your email and password.');return;}
+  btn.disabled=true;btn.textContent='Signing in…';
+  const {error}=await sb.auth.signInWithPassword({email,password});
+  if(error){showErr(error.message);btn.disabled=false;btn.textContent='Sign in to Dashboard';}
+  else{location.href='dashboard.html';}
+}
+
+document.addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+</script>
+</body>
+</html>

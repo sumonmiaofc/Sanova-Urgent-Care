@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Settings | Sanova Blog Admin</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="../css/admin.css"/>
+</head>
+<body>
+<div id="sidebarMount"></div>
+<div class="main">
+  <div class="topbar">
+    <div><div class="topbar-title">Settings</div><div class="topbar-sub">Manage your account and blog settings</div></div>
+  </div>
+  <div class="page-body" style="max-width:640px;">
+
+    <!-- Account -->
+    <div class="card" style="margin-bottom:1.5rem;">
+      <div class="card-header"><h3>Account</h3></div>
+      <div class="card-body">
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-input" id="accountEmail" readonly style="background:#f7fafc;cursor:not-allowed;"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">New Password</label>
+          <input type="password" class="form-input" id="newPassword" placeholder="Leave blank to keep current"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Confirm Password</label>
+          <input type="password" class="form-input" id="confirmPassword" placeholder="Repeat new password"/>
+        </div>
+        <button class="btn btn-primary" onclick="updatePassword()">Update Password</button>
+      </div>
+    </div>
+
+    <!-- Danger -->
+    <div class="card" style="border-color:#fecaca;">
+      <div class="card-header"><h3 style="color:var(--red);">Danger Zone</h3></div>
+      <div class="card-body">
+        <p style="font-size:.875rem;color:var(--muted);margin-bottom:1rem;">Sign out of all sessions on all devices.</p>
+        <button class="btn btn-danger" onclick="signOutAll()">Sign Out Everywhere</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../js/config.js"></script>
+<script>
+(async()=>{
+  const session=await requireAuth();if(!session)return;
+  const r=await fetch('sidebar.html');
+  document.getElementById('sidebarMount').innerHTML=await r.text();
+  document.querySelectorAll('.nav-link[data-page="settings"]').forEach(l=>l.classList.add('active'));
+  document.getElementById('sbEmail').textContent=session.user.email;
+  document.getElementById('sbAvatar').textContent=session.user.email.charAt(0).toUpperCase();
+  document.getElementById('accountEmail').value=session.user.email;
+})();
+
+async function updatePassword(){
+  const pw=document.getElementById('newPassword').value;
+  const cpw=document.getElementById('confirmPassword').value;
+  if(!pw){showToast('Enter a new password','warn');return;}
+  if(pw!==cpw){showToast('Passwords do not match','error');return;}
+  if(pw.length<6){showToast('Password must be at least 6 characters','error');return;}
+  const {error}=await sb.auth.updateUser({password:pw});
+  if(error)showToast('Error: '+error.message,'error');
+  else{showToast('Password updated!','success');document.getElementById('newPassword').value='';document.getElementById('confirmPassword').value='';}
+}
+
+async function signOutAll(){
+  await sb.auth.signOut({scope:'global'});
+  location.href='login.html';
+}
+
+async function doLogout(){await sb.auth.signOut();location.href='login.html';}
+</script>
+</body>
+</html>
