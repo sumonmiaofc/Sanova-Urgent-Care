@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Blog & Health Tips | Sanova Urgent Care Tucson</title>
+<meta name="description" content="Health tips, urgent care guides, IV therapy insights, and wellness advice from the Sanova medical team in Tucson, AZ."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="icon" type="image/png" href="assets/favicon.png" sizes="32x32">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="apple-touch-icon" href="assets/favicon.png">
+<link rel="stylesheet" href="css/style.css"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body data-page="blog">
+<div data-inc="partials/header.html"></div>
+<main>
+
+<!-- PAGE HERO -->
+<section class="page-hero">
+  <div class="container">
+    <div class="page-hero-grid">
+      <div>
+        <span class="label" style="color:rgba(255,255,255,.7);margin-bottom:1rem;display:inline-flex;align-items:center;gap:.5rem;font-size:.7rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;">
+          <span style="width:20px;height:1.5px;background:rgba(255,255,255,.5);border-radius:2px;display:inline-block;"></span>Health Journal
+        </span>
+        <h1 class="page-hero-title">Tips, Guides &amp; <em>Health Insights</em></h1>
+        <p class="page-hero-desc">Practical health advice from the Sanova medical team. From urgent care FAQs to IV therapy guides and wellness tips — written for real people in Tucson.</p>
+        <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-top:2rem;">
+          <a href="tel:5202322525" class="btn btn-accent btn-lg">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" style="width:18px;height:18px;"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A2 2 0 014.11 2h3a2 2 0 012 1.72c.13.96.37 1.9.72 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.91.35 1.85.59 2.81.72A2 2 0 0122 16.92z"/></svg>
+            Call 520-232-2525
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BLOG POSTS — Dynamic from Supabase -->
+<section class="section bg-bg" id="blogPosts">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="label">Latest Articles</span>
+      <h2 class="h2" style="margin-top:.6rem;">Health Tips From Our Team</h2>
+    </div>
+
+    <!-- Loading state -->
+    <div id="blogLoading" style="text-align:center;padding:4rem;color:var(--c-muted);">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin:0 auto 1rem;display:block;animation:spin 1s linear infinite;" stroke-linecap="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+      Loading articles…
+    </div>
+
+    <!-- Empty state -->
+    <div id="blogEmpty" style="display:none;text-align:center;padding:4rem;">
+      <p style="color:var(--c-muted);font-size:1.1rem;">No articles published yet. Check back soon!</p>
+    </div>
+
+    <!-- Featured post (first published) -->
+    <div id="blogFeatured" style="display:none;margin-bottom:3rem;"></div>
+
+    <!-- Post grid -->
+    <div id="blogGrid" class="grid-3" style="display:none;"></div>
+  </div>
+</section>
+
+<!-- NEWSLETTER -->
+<section class="section">
+  <div class="container">
+    <div class="newsletter-wrap">
+      <div style="display:grid;grid-template-columns:1fr auto;gap:3rem;align-items:center;flex-wrap:wrap;">
+        <div>
+          <span class="label">Stay Informed</span>
+          <h2 class="h2" style="margin-top:.6rem;">Health Tips Delivered Monthly</h2>
+          <p style="margin-top:.75rem;color:var(--c-muted);">Get the latest articles, seasonal health alerts, and clinic updates. No spam — just useful content from our medical team.</p>
+          <form class="newsletter-form" aria-label="Newsletter signup">
+            <input type="email" placeholder="Your email address" required aria-label="Email address"/>
+            <button type="submit" class="btn btn-primary">Subscribe</button>
+          </form>
+        </div>
+        <div style="text-align:center;padding:2rem;">
+          <div style="font-family:var(--ff-serif);font-size:4rem;color:var(--c-teal);line-height:1;">📬</div>
+          <div style="font-size:.8rem;color:var(--c-muted);margin-top:.5rem;font-weight:500;">Join Tucson readers</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="section cta-section">
+  <div class="container cta-inner section-sm" style="padding-block:clamp(3rem,6vw,5rem);">
+    <h2 class="cta-title reveal">Questions? We're <em>Open Now.</em></h2>
+    <p class="cta-sub reveal">Don't wait — walk into Sanova Urgent Care any time, Mon through Sat, 7AM to 7PM.</p>
+    <div class="cta-btns reveal">
+      <a href="tel:5202322525" class="btn btn-accent btn-lg">Call 520-232-2525</a>
+      <a href="contact.html" class="btn btn-outline-white btn-lg">Get Directions</a>
+    </div>
+  </div>
+</section>
+
+</main>
+<div data-inc="partials/faq.html"></div>
+<div data-inc="partials/footer.html"></div>
+<script src="js/main.js"></script>
+
+<style>
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+
+<script>
+(function(){
+  const SUPABASE_URL='https://fogkdxevecwnqbmezdnu.supabase.co';
+  const SUPABASE_KEY='sb_publishable_JVJjN0WRgFOJSWSIQTQsIA_sFr8EJVO';
+  const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+
+  function fmtDate(d){
+    if(!d)return'';
+    return new Date(d).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+  }
+
+  function cardBg(category){
+    const map={
+      'IV Therapy':'linear-gradient(135deg,#073f47,#1a8fa8)',
+      'Urgent Care':'linear-gradient(135deg,#1d4ed8,#3b82f6)',
+      'Prevention':'linear-gradient(135deg,#065f46,#10b981)',
+      'Arizona Health':'linear-gradient(135deg,#d97706,#f59e0b)',
+      'Insurance & Billing':'linear-gradient(135deg,#4c1d95,#7c3aed)',
+      'Wellness':'linear-gradient(135deg,#065f46,#34d399)',
+      'Physicals':'linear-gradient(135deg,#b45309,#f59e0b)',
+    };
+    return map[category]||'linear-gradient(135deg,#073f47,#0d6e7a)';
+  }
+
+  function featuredHTML(p){
+    const bg=p.cover_image?`url(${p.cover_image}) center/cover`:`${cardBg(p.category)}`;
+    return `<div class="blog-hero-card">
+      <div class="blog-hero-art" style="background:${bg};min-height:300px;"></div>
+      <div class="blog-hero-body">
+        <span class="blog-tag">${p.category||'Health Tips'} · Featured</span>
+        <h2 class="blog-title">
+          <a href="blog-post.html?slug=${p.slug}">${p.title}</a>
+        </h2>
+        <p class="blog-excerpt">${p.excerpt||''}</p>
+        <div class="blog-meta">
+          <span>${p.author||'Sanova Medical Team'}</span>
+          <span>${fmtDate(p.published_at||p.created_at)}</span>
+        </div>
+        <a href="blog-post.html?slug=${p.slug}" class="btn btn-primary" style="margin-top:1.5rem;">Read Article →</a>
+      </div>
+    </div>`;
+  }
+
+  function cardHTML(p){
+    const bg=p.cover_image?`url(${p.cover_image}) center/cover`:`${cardBg(p.category)}`;
+    return `<div class="blog-card">
+      <div class="blog-card-art" style="background:${bg};aspect-ratio:16/10;"></div>
+      <div class="blog-card-body">
+        <span class="blog-tag">${p.category||'Health Tips'}</span>
+        <h3 class="blog-card-title"><a href="blog-post.html?slug=${p.slug}">${p.title}</a></h3>
+        <p class="blog-card-excerpt">${p.excerpt||''}</p>
+        <div class="blog-card-meta">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          ${p.author||'Sanova Medical Team'} · ${fmtDate(p.published_at||p.created_at)}
+        </div>
+      </div>
+    </div>`;
+  }
+
+  async function loadPosts(){
+    const {data,error}=await sb
+      .from('posts')
+      .select('id,title,slug,excerpt,author,category,cover_image,published_at,created_at')
+      .eq('status','published')
+      .order('published_at',{ascending:false});
+
+    document.getElementById('blogLoading').style.display='none';
+
+    if(error||!data||!data.length){
+      document.getElementById('blogEmpty').style.display='block';
+      return;
+    }
+
+    // Featured = first post
+    const featured=data[0];
+    const rest=data.slice(1);
+
+    document.getElementById('blogFeatured').innerHTML=featuredHTML(featured);
+    document.getElementById('blogFeatured').style.display='block';
+
+    if(rest.length){
+      document.getElementById('blogGrid').innerHTML=rest.map(cardHTML).join('');
+      document.getElementById('blogGrid').style.display='grid';
+    }
+  }
+
+  loadPosts();
+})();
+</script>
+</body>
+</html>

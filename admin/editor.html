@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Post Editor | Sanova Blog Admin</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f4f8;color:#1e2d3a;}
+.sidebar{position:fixed;top:0;left:0;width:240px;height:100vh;background:linear-gradient(180deg,#073f47,#0d6e7a);padding:1.5rem;display:flex;flex-direction:column;z-index:10;}
+.sb-logo{display:flex;align-items:center;gap:.75rem;margin-bottom:2rem;padding-bottom:1.5rem;border-bottom:1px solid rgba(255,255,255,.15);}
+.sb-logo-icon{width:38px;height:38px;background:rgba(255,255,255,.15);border-radius:10px;display:grid;place-items:center;}
+.sb-logo-icon svg{width:20px;height:20px;color:#fff;}
+.sb-logo-text .name{font-weight:700;color:#fff;font-size:1.05rem;}
+.sb-logo-text .sub{font-size:.7rem;color:rgba(255,255,255,.6);letter-spacing:.1em;text-transform:uppercase;}
+.sb-nav{display:flex;flex-direction:column;gap:.35rem;flex:1;}
+.sb-link{display:flex;align-items:center;gap:.75rem;padding:.75rem 1rem;border-radius:8px;color:rgba(255,255,255,.75);font-size:.9rem;font-weight:500;cursor:pointer;transition:all .2s;text-decoration:none;}
+.sb-link:hover,.sb-link.active{background:rgba(255,255,255,.15);color:#fff;}
+.sb-link svg{width:18px;height:18px;flex-shrink:0;}
+.sb-bottom{border-top:1px solid rgba(255,255,255,.15);padding-top:1rem;}
+.sb-logout{display:flex;align-items:center;gap:.5rem;color:rgba(255,255,255,.6);font-size:.85rem;cursor:pointer;padding:.5rem 0;background:none;border:none;}
+.sb-logout:hover{color:#fff;}
+
+.main{margin-left:240px;padding:2rem;}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;flex-wrap:wrap;gap:1rem;}
+.topbar h2{font-size:1.5rem;font-weight:700;color:#0f1923;}
+.topbar-actions{display:flex;gap:.75rem;}
+.btn{display:inline-flex;align-items:center;gap:.5rem;padding:.75rem 1.5rem;border-radius:8px;font-size:.9rem;font-weight:600;cursor:pointer;border:none;transition:all .2s;text-decoration:none;}
+.btn-primary{background:linear-gradient(135deg,#073f47,#0d6e7a);color:#fff;}
+.btn-primary:hover{opacity:.9;}
+.btn-outline{background:#fff;border:1.5px solid #e2eaee;color:#1e2d3a;}
+.btn-outline:hover{border-color:#0d6e7a;color:#0d6e7a;}
+.btn-success{background:#15803d;color:#fff;}
+.btn-success:hover{opacity:.9;}
+.btn:disabled{opacity:.6;cursor:not-allowed;}
+
+.editor-grid{display:grid;grid-template-columns:1fr 300px;gap:1.5rem;align-items:start;}
+.card{background:#fff;border-radius:12px;border:1px solid #e2eaee;padding:1.5rem;margin-bottom:1.5rem;}
+.card h3{font-size:.9rem;font-weight:600;color:#64788a;text-transform:uppercase;letter-spacing:.08em;margin-bottom:1rem;}
+label{display:block;font-size:.85rem;font-weight:600;color:#1e2d3a;margin-bottom:.4rem;}
+input,select,textarea{width:100%;padding:.8rem 1rem;border:1.5px solid #e2eaee;border-radius:8px;font-size:.95rem;font-family:inherit;outline:none;transition:border-color .2s;background:#fff;}
+input:focus,select:focus,textarea:focus{border-color:#0d6e7a;box-shadow:0 0 0 3px rgba(13,110,122,.1);}
+.form-group{margin-bottom:1.25rem;}
+.slug-wrap{display:flex;align-items:center;gap:.5rem;}
+.slug-prefix{color:#64788a;font-size:.875rem;white-space:nowrap;}
+#slugInput{flex:1;}
+.status-badge{display:inline-block;padding:.3rem .85rem;border-radius:9999px;font-size:.78rem;font-weight:600;}
+.status-published{background:#dcfce7;color:#15803d;}
+.status-draft{background:#fef9c3;color:#a16207;}
+.save-msg{font-size:.85rem;color:#15803d;font-weight:500;display:none;}
+#editorWrap{min-height:400px;}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 2v20M2 12h20"/></svg>
+    </div>
+    <div class="sb-logo-text"><div class="name">Sanova</div><div class="sub">Blog Admin</div></div>
+  </div>
+  <nav class="sb-nav">
+    <a href="dashboard.html" class="sb-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Dashboard
+    </a>
+    <a href="editor.html" class="sb-link active">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      New Post
+    </a>
+    <a href="../blog.html" target="_blank" class="sb-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+      View Blog
+    </a>
+  </nav>
+  <div class="sb-bottom">
+    <button class="sb-logout" onclick="doLogout()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+      Sign Out
+    </button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="topbar">
+    <h2 id="pageTitle">New Post</h2>
+    <div class="topbar-actions">
+      <span class="save-msg" id="saveMsg">✓ Saved!</span>
+      <button class="btn btn-outline" onclick="saveDraft()">Save Draft</button>
+      <button class="btn btn-success" onclick="publishPost()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+        Publish
+      </button>
+    </div>
+  </div>
+
+  <div class="editor-grid">
+    <!-- Left: content -->
+    <div>
+      <div class="card">
+        <div class="form-group">
+          <label>Post Title *</label>
+          <input type="text" id="titleInput" placeholder="e.g. When to Visit Urgent Care vs the ER" oninput="autoSlug()"/>
+        </div>
+        <div class="form-group">
+          <label>URL Slug *</label>
+          <div class="slug-wrap">
+            <span class="slug-prefix">blog-post.html?slug=</span>
+            <input type="text" id="slugInput" placeholder="when-to-visit-urgent-care"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Excerpt (short summary)</label>
+          <textarea id="excerptInput" rows="3" placeholder="A brief 1–2 sentence summary shown on the blog listing page…"></textarea>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Content</h3>
+        <div id="editorWrap">
+          <textarea id="postContent"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: meta -->
+    <div>
+      <div class="card">
+        <h3>Status</h3>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+          <span id="statusBadge" class="status-badge status-draft">Draft</span>
+        </div>
+        <button class="btn btn-success" onclick="publishPost()" style="width:100%;justify-content:center;">Publish Now</button>
+        <button class="btn btn-outline" onclick="saveDraft()" style="width:100%;justify-content:center;margin-top:.5rem;">Save as Draft</button>
+      </div>
+
+      <div class="card">
+        <h3>Post Details</h3>
+        <div class="form-group">
+          <label>Author</label>
+          <input type="text" id="authorInput" value="Sanova Medical Team"/>
+        </div>
+        <div class="form-group">
+          <label>Category</label>
+          <select id="categoryInput">
+            <option>Health Tips</option>
+            <option>Urgent Care</option>
+            <option>IV Therapy</option>
+            <option>Prevention</option>
+            <option>Arizona Health</option>
+            <option>Insurance & Billing</option>
+            <option>Wellness</option>
+            <option>Physicals</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Cover Image URL</label>
+          <input type="text" id="coverInput" placeholder="https://… or leave blank"/>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Danger Zone</h3>
+        <button class="btn" style="width:100%;justify-content:center;background:#fef2f2;border:1.5px solid #fecaca;color:#dc2626;" onclick="deletePost()" id="deleteBtn" disabled>Delete Post</button>
+        <p style="font-size:.75rem;color:#64788a;margin-top:.5rem;text-align:center;">Only available when editing an existing post</p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+const SUPABASE_URL='https://fogkdxevecwnqbmezdnu.supabase.co';
+const SUPABASE_KEY='sb_publishable_JVJjN0WRgFOJSWSIQTQsIA_sFr8EJVO';
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+
+let postId=null;
+let currentStatus='draft';
+
+// Auth check
+sb.auth.getSession().then(({data:{session}})=>{
+  if(!session){location.href='index.html';return;}
+  initEditor();
+  const params=new URLSearchParams(location.search);
+  const id=params.get('id');
+  if(id){postId=id;loadPost(id);}
+});
+
+// Init TinyMCE
+function initEditor(){
+  tinymce.init({
+    selector:'#postContent',
+    height:500,
+    menubar:false,
+    plugins:'lists link image code table',
+    toolbar:'undo redo | formatselect | bold italic underline | alignleft aligncenter alignright | bullist numlist | link image | code',
+    content_style:'body{font-family:Segoe UI,system-ui,sans-serif;font-size:16px;line-height:1.7;color:#1e2d3a;max-width:800px;margin:1rem auto;}',
+    branding:false,
+  });
+}
+
+async function loadPost(id){
+  const {data,error}=await sb.from('posts').select('*').eq('id',id).single();
+  if(error||!data){alert('Post not found');return;}
+  document.getElementById('pageTitle').textContent='Edit Post';
+  document.getElementById('titleInput').value=data.title||'';
+  document.getElementById('slugInput').value=data.slug||'';
+  document.getElementById('excerptInput').value=data.excerpt||'';
+  document.getElementById('authorInput').value=data.author||'';
+  document.getElementById('categoryInput').value=data.category||'Health Tips';
+  document.getElementById('coverInput').value=data.cover_image||'';
+  currentStatus=data.status||'draft';
+  updateStatusBadge();
+  document.getElementById('deleteBtn').disabled=false;
+  // Set editor content after init
+  const check=setInterval(()=>{
+    if(tinymce.get('postContent')){
+      tinymce.get('postContent').setContent(data.content||'');
+      clearInterval(check);
+    }
+  },200);
+}
+
+function autoSlug(){
+  if(postId)return; // don't override on edit
+  const title=document.getElementById('titleInput').value;
+  document.getElementById('slugInput').value=title.toLowerCase().replace(/[^a-z0-9\s-]/g,'').trim().replace(/\s+/g,'-');
+}
+
+function getContent(){
+  const editor=tinymce.get('postContent');
+  return editor?editor.getContent():document.getElementById('postContent').value;
+}
+
+function buildData(status){
+  const data={
+    title:document.getElementById('titleInput').value.trim(),
+    slug:document.getElementById('slugInput').value.trim(),
+    excerpt:document.getElementById('excerptInput').value.trim(),
+    content:getContent(),
+    author:document.getElementById('authorInput').value.trim(),
+    category:document.getElementById('categoryInput').value,
+    cover_image:document.getElementById('coverInput').value.trim()||null,
+    status,
+  };
+  if(status==='published'&&currentStatus!=='published') data.published_at=new Date().toISOString();
+  return data;
+}
+
+async function saveDraft(){
+  await save('draft');
+}
+
+async function publishPost(){
+  await save('published');
+}
+
+async function save(status){
+  const data=buildData(status);
+  if(!data.title){alert('Title is required');return;}
+  if(!data.slug){alert('Slug is required');return;}
+
+  let error;
+  if(postId){
+    ({error}=await sb.from('posts').update(data).eq('id',postId));
+  } else {
+    const res=await sb.from('posts').insert(data).select().single();
+    error=res.error;
+    if(res.data){postId=res.data.id;document.getElementById('deleteBtn').disabled=false;}
+  }
+  if(error){alert('Error: '+error.message);return;}
+  currentStatus=status;
+  updateStatusBadge();
+  const msg=document.getElementById('saveMsg');
+  msg.style.display='inline';
+  setTimeout(()=>msg.style.display='none',2500);
+  document.getElementById('pageTitle').textContent='Edit Post';
+}
+
+async function deletePost(){
+  if(!postId)return;
+  const title=document.getElementById('titleInput').value;
+  if(!confirm(`Delete "${title}"?\nThis cannot be undone.`))return;
+  const {error}=await sb.from('posts').delete().eq('id',postId);
+  if(!error)location.href='dashboard.html';
+}
+
+function updateStatusBadge(){
+  const badge=document.getElementById('statusBadge');
+  badge.textContent=currentStatus==='published'?'Published':'Draft';
+  badge.className='status-badge status-'+currentStatus;
+}
+
+async function doLogout(){await sb.auth.signOut();location.href='index.html';}
+</script>
+</body>
+</html>
