@@ -316,7 +316,7 @@
   async function load(){
     const [{data:cats},{data:posts}]=await Promise.all([
       sb.from('categories').select('id,name').order('name'),
-      sb.from('blogs').select('id,title,slug,excerpt,content,featured_image,author,published_at,created_at,categories(id,name)') .order('published_at',{ascending:false})
+      sb.from('blogs').select('id,title,slug,excerpt,content,featured_image,author,published_at,created_at,category_id').order('published_at',{ascending:false})
     ]);
 
     document.getElementById('blogLoading').style.display='none';
@@ -329,7 +329,10 @@
       btn.onclick=()=>setCat(c.id);cf.appendChild(btn);
     });
 
-    allPosts=posts||[];filtered=[...allPosts];
+    const catMap={};
+(cats||[]).forEach(c=>{catMap[c.id]=c;});
+allPosts=(posts||[]).map(p=>({...p,categories:catMap[p.category_id]||null}));
+filtered=[...allPosts];
     render();
   }
 
