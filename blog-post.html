@@ -1022,7 +1022,8 @@
   var SB_URL='https://fogkdxevecwnqbmezdnu.supabase.co';
   var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZvZ2tkeGV2ZWN3bnFibWV6ZG51Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk5NDg0NzgsImV4cCI6MjA4NTUyNDQ3OH0.Gy8nDxKZFvPHrp2-r7bQILCn-zl0QmH5bb52tIVDOv0';
   var sb=supabase.createClient(SB_URL,SB_KEY);
-  var slug=new URLSearchParams(location.search).get('slug')||location.pathname.split('/blog/')[1];
+  var rawSlug=new URLSearchParams(location.search).get('slug')||location.pathname.split('/blog/')[1]||'';
+var slug=rawSlug.replace(/\/+$/,'').trim();
 
   var catColors=[
     {bg:'#eef7f9',text:'#0d6e7a',border:'#b3dfe5'},
