@@ -16,7 +16,7 @@
       <div class="topbar-sub" id="postCount">Loading…</div>
     </div>
     <div class="topbar-actions">
-      <a href="create-blog.html" class="btn btn-primary">
+      <a href="/admin/create-blog" class="btn btn-primary">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
         New Post
       </a>
@@ -147,7 +147,7 @@ function renderTable(){
       <td style="color:var(--muted);font-size:.82rem;">${fmtDateShort(b.created_at)}</td>
       <td>
         <div style="display:flex;gap:.4rem;">
-          <a href="create-blog.html?id=${b.id}" class="btn btn-outline btn-sm">Edit</a>
+          <a href="/admin/create-blog?id=${b.id}" class="btn btn-outline btn-sm">Edit</a>
           <button class="btn btn-sm ${b.published?'btn-warn':'btn-success'}" onclick="togglePublish('${b.id}',${b.published})">${b.published?'Unpublish':'Publish'}</button>
           <button class="btn btn-ghost btn-sm btn-icon" onclick="delPost('${b.id}','${b.title?.replace(/'/g,"\\'")}')" title="Delete">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
@@ -207,7 +207,7 @@ async function bulkPublish(){const ids=getSelected();if(!ids.length)return;await
 async function bulkDraft(){const ids=getSelected();if(!ids.length)return;await sb.from('blogs').update({published:false}).in('id',ids);showToast(`${ids.length} posts set to draft`,'success');await loadBlogs();}
 function bulkDelete(){const ids=getSelected();if(!ids.length)return;confirmModal('Delete Posts',`Delete ${ids.length} posts? This cannot be undone.`,async()=>{await sb.from('blogs').delete().in('id',ids);showToast(`${ids.length} posts deleted`,'success');await loadBlogs();});}
 
-async function doLogout(){await sb.auth.signOut();location.href='login.html';}
+async function doLogout(){await sb.auth.signOut();location.href='/admin';}
 </script>
 </body>
 </html>

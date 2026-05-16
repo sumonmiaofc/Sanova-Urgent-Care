@@ -83,7 +83,7 @@ const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSI
 const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
 // Already logged in?
-sb.auth.getSession().then(({data:{session}})=>{if(session)location.href='dashboard.html';});
+sb.auth.getSession().then(({data:{session}})=>{if(session)location.href='/admin/dashboard';});
 
 function togglePw(){
   const inp=document.getElementById('password');
