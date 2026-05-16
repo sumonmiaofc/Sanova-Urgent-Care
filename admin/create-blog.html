@@ -365,10 +365,9 @@ async function loadPost(id){
 
 function autoSlug(){
   if(postId)return;
-  const base=makeSlug(document.getElementById('titleInput').value);
-  const ts=Date.now().toString().slice(-4);
-  document.getElementById('slugInput').value=base+'-'+ts;}
+  document.getElementById('slugInput').value=makeSlug(document.getElementById('titleInput').value);
   updateSeoPreview();
+}
 
 
 function updateStatusUI(){
