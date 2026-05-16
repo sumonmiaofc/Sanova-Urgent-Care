@@ -325,7 +325,7 @@
 
   async function load(){
     const {data:post,error}=await sb.from('blogs')
-      .select('*,categories(id,name)')
+      .select('*')
       .eq('slug',slug)
       .eq('published',true)
       .single();
