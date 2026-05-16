@@ -327,7 +327,6 @@
     const {data:post,error}=await sb.from('blogs')
       .select('*')
       .eq('slug',slug)
-      .eq('published',true)
       .single();
 
     document.getElementById('postLoading').style.display='none';
