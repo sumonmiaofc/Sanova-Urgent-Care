@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title id="pageTitle">Blog | Sanova Urgent Care</title>
+<meta name="description" content="" id="pageDesc"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="icon" type="image/png" href="../assets/favicon.png" sizes="32x32">
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+<link rel="stylesheet" href="../css/style.css"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*,*::before,*::after{box-sizing:border-box;}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes glow{0%,100%{opacity:.5}50%{opacity:1}}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* ============================================================
+   HERO — Premium Medical SaaS Style
+   ============================================================ */
+.sp-hero{
+  position:relative;
+  background:#040f12;
+  overflow:hidden;
+  padding:0;
+}
+
+/* Layered gradient background */
+.sp-hero-bg{
+  position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 10% 50%, rgba(13,110,122,.55), transparent),
+    radial-gradient(ellipse 60% 80% at 90% 20%, rgba(26,143,168,.35), transparent),
+    radial-gradient(ellipse 50% 60% at 50% 100%, rgba(7,63,71,.8), transparent),
+    linear-gradient(135deg,#040f12 0%,#052e35 40%,#073f47 70%,#0a4f5a 100%);
+  pointer-events:none;
+}
+
+/* Abstract floating shapes */
+.sp-hero-orb{
+  position:absolute;
+  border-radius:50%;
+  pointer-events:none;
+  filter:blur(60px);
+  animation:float 8s ease-in-out infinite;
+}
+.sp-hero-orb-1{
+  width:400px;height:400px;
+  background:rgba(13,110,122,.3);
+  top:-100px;right:-50px;
+  animation-delay:0s;
+}
+.sp-hero-orb-2{
+  width:280px;height:280px;
+  background:rgba(26,143,168,.2);
+  bottom:-80px;left:10%;
+  animation-delay:-3s;
+}
+.sp-hero-orb-3{
+  width:200px;height:200px;
+  background:rgba(249,115,22,.1);
+  top:30%;right:20%;
+  animation-delay:-5s;
+}
+
+/* Grid pattern overlay */
+.sp-hero-grid{
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(13,110,122,.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(13,110,122,.08) 1px, transparent 1px);
+  background-size:60px 60px;
+  pointer-events:none;
+}
+
+/* Noise texture */
+.sp-hero-noise{
+  position:absolute;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events:none;
+  opacity:.4;
+}
+
+.sp-hero-inner{
+  position:relative;z-index:10;
+  max-width:900px;
+  margin-inline:auto;
+  padding:clamp(3.5rem,7vw,5.5rem) clamp(1.5rem,5vw,3rem) clamp(3rem,6vw,5rem);
+  animation:fadeUp .7s cubic-bezier(.22,1,.36,1) both;
+}
+
+/* Breadcrumb */
+.sp-breadcrumb{
+  display:flex;align-items:center;gap:.5rem;
+  margin-bottom:2rem;
+}
+.sp-breadcrumb a{
+  color:rgba(125,232,184,.7);
+  font-size:.75rem;font-weight:500;
+  text-decoration:none;
+  letter-spacing:.04em;
+  transition:color .2s;
+  display:flex;align-items:center;gap:.4rem;
+}
+.sp-breadcrumb a:hover{color:#7de8b8;}
+.sp-breadcrumb-sep{color:rgba(255,255,255,.2);font-size:.75rem;}
+.sp-breadcrumb-cur{color:rgba(255,255,255,.4);font-size:.75rem;letter-spacing:.04em;}
+
+/* Category + meta row */
+.sp-hero-meta{
+  display:flex;align-items:center;gap:.75rem;
+  flex-wrap:wrap;margin-bottom:1.75rem;
+}
+.sp-hero-cat{
+  display:inline-flex;align-items:center;gap:.4rem;
+  padding:.35rem 1rem;
+  border-radius:9999px;
+  font-size:.7rem;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;
+  background:linear-gradient(135deg,rgba(125,232,184,.2),rgba(13,110,122,.3));
+  color:#7de8b8;
+  border:1px solid rgba(125,232,184,.25);
+  backdrop-filter:blur(8px);
+  box-shadow:0 0 20px rgba(125,232,184,.1);
+}
+.sp-hero-cat-dot{
+  width:6px;height:6px;
+  background:#7de8b8;
+  border-radius:50%;
+  animation:glow 2s ease infinite;
+}
+.sp-hero-divider{
+  width:4px;height:4px;
+  background:rgba(255,255,255,.2);
+  border-radius:50%;
+}
+.sp-hero-metaitem{
+  display:flex;align-items:center;gap:.4rem;
+  font-size:.78rem;color:rgba(255,255,255,.5);
+  font-weight:400;
+}
+.sp-hero-metaitem svg{width:14px;height:14px;flex-shrink:0;opacity:.7;}
+
+/* Title */
+.sp-hero-title{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(2rem,5vw,3.5rem);
+  font-weight:800;
+  color:#fff;
+  line-height:1.1;
+  letter-spacing:-.03em;
+  margin-bottom:2rem;
+  text-shadow:0 2px 40px rgba(0,0,0,.3);
+}
+
+/* Author card */
+.sp-hero-author{
+  display:flex;align-items:center;gap:1rem;
+  padding:1.1rem 1.5rem;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:14px;
+  backdrop-filter:blur(12px);
+  width:fit-content;
+  transition:all .3s;
+}
+.sp-hero-author:hover{
+  background:rgba(255,255,255,.09);
+  border-color:rgba(125,232,184,.2);
+}
+.sp-hero-av{
+  width:42px;height:42px;
+  background:linear-gradient(135deg,#0d6e7a,#1a8fa8);
+  border-radius:50%;
+  display:grid;place-items:center;
+  color:#fff;font-weight:700;font-size:1rem;
+  flex-shrink:0;
+  border:2px solid rgba(125,232,184,.3);
+  box-shadow:0 0 16px rgba(13,110,122,.4);
+}
+.sp-hero-author-info{}
+.sp-hero-author-name{
+  font-size:.875rem;font-weight:600;
+  color:#fff;line-height:1.2;
+}
+.sp-hero-author-role{
+  font-size:.72rem;
+  color:rgba(255,255,255,.45);
+  margin-top:2px;
+}
+
+/* Bottom wave */
+.sp-hero-wave{
+  display:block;width:100%;
+  position:relative;z-index:5;
+  margin-top:-1px;
+  line-height:0;
+}
+
+/* ============================================================
+   MAIN LAYOUT
+   ============================================================ */
+.sp-main{
+  background:#f0f4f8;
+  padding:0 0 5rem;
+}
+.sp-main-inner{
+  max-width:1240px;
+  margin-inline:auto;
+  padding:2.5rem clamp(1.25rem,4vw,2.5rem) 0;
+  display:grid;
+  grid-template-columns:1fr 340px;
+  gap:2.5rem;
+  align-items:start;
+}
+
+/* ============================================================
+   ARTICLE CARD
+   ============================================================ */
+.sp-article{
+  background:#fff;
+  border-radius:24px;
+  overflow:hidden;
+  box-shadow:0 4px 6px -1px rgba(0,0,0,.05),0 20px 60px -10px rgba(0,0,0,.08);
+  border:1px solid rgba(226,234,238,.8);
+  animation:fadeUp .5s .1s cubic-bezier(.22,1,.36,1) both;
+}
+
+/* Featured image — top of article, before content */
+.sp-feat-img{
+  width:100%;
+  aspect-ratio:16/8;
+  object-fit:cover;
+  display:block;
+}
+.sp-feat-img-placeholder{
+  width:100%;aspect-ratio:16/8;
+  background:linear-gradient(135deg,#073f47,#0d6e7a,#1a8fa8);
+}
+
+.sp-article-body{
+  padding:clamp(1.75rem,4vw,3rem);
+}
+
+/* Share bar */
+.sp-share{
+  display:flex;align-items:center;gap:.65rem;
+  flex-wrap:wrap;
+  padding-bottom:2rem;
+  margin-bottom:2.5rem;
+  border-bottom:1px solid #f0f4f8;
+}
+.sp-share-label{
+  font-size:.68rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.12em;
+  color:#94a3b8;margin-right:.25rem;
+}
+.sp-share-btn{
+  display:inline-flex;align-items:center;gap:.4rem;
+  padding:.42rem .95rem;
+  border-radius:9999px;
+  font-size:.78rem;font-weight:600;
+  cursor:pointer;
+  border:1.5px solid #e2eaee;
+  background:#fff;
+  color:#64788a;
+  transition:all .22s;
+  font-family:inherit;
+}
+.sp-share-btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 6px 20px rgba(0,0,0,.08);
+  border-color:#0d6e7a;color:#0d6e7a;
+}
+.sp-share-btn svg{width:13px;height:13px;flex-shrink:0;}
+
+/* Post content */
+.sp-content{
+  font-size:1.05rem;
+  line-height:1.9;
+  color:#334155;
+  font-weight:400;
+}
+.sp-content>*:first-child{margin-top:0!important;}
+.sp-content h2{
+  font-family:'Playfair Display',serif;
+  font-size:1.65rem;font-weight:700;
+  color:#0f172a;
+  margin:3rem 0 1.1rem;
+  padding-top:1.25rem;
+  border-top:2px solid #f1f5f9;
+  letter-spacing:-.02em;
+  line-height:1.25;
+}
+.sp-content h3{
+  font-size:1.2rem;font-weight:700;
+  color:#0f172a;
+  margin:2.25rem 0 .85rem;
+  letter-spacing:-.01em;
+}
+.sp-content p{margin-bottom:1.6rem;}
+.sp-content ul,.sp-content ol{margin:0 0 1.6rem 1.6rem;}
+.sp-content li{margin-bottom:.6rem;line-height:1.75;}
+.sp-content a{
+  color:#0d6e7a;
+  text-decoration:underline;
+  text-underline-offset:3px;
+  text-decoration-thickness:1px;
+  font-weight:500;
+  transition:color .2s;
+}
+.sp-content a:hover{color:#073f47;}
+.sp-content strong{color:#0f172a;font-weight:700;}
+.sp-content em{color:#475569;font-style:italic;}
+
+/* Styled blockquote */
+.sp-content blockquote{
+  position:relative;
+  margin:2.5rem 0;
+  padding:1.75rem 1.75rem 1.75rem 2rem;
+  background:linear-gradient(135deg,#eef7f9,#f0fbfd);
+  border-radius:0 16px 16px 0;
+  border-left:4px solid #0d6e7a;
+  font-style:italic;
+  font-size:1.08rem;
+  color:#2d4a56;
+  line-height:1.75;
+  box-shadow:0 4px 20px rgba(13,110,122,.06);
+}
+.sp-content blockquote::before{
+  content:'\201C';
+  position:absolute;top:-.5rem;left:1.25rem;
+  font-family:'Playfair Display',serif;
+  font-size:4rem;color:rgba(13,110,122,.15);
+  line-height:1;
+}
+
+.sp-content img{
+  width:100%;border-radius:14px;
+  margin:2rem 0;
+  box-shadow:0 8px 32px rgba(0,0,0,.1);
+  transition:transform .3s;
+}
+.sp-content img:hover{transform:scale(1.01);}
+
+/* Code */
+.sp-content pre{
+  background:#0f172a;color:#e2e8f0;
+  padding:1.75rem;border-radius:14px;
+  overflow-x:auto;margin:2rem 0;
+  font-size:.875rem;line-height:1.75;
+  box-shadow:0 8px 32px rgba(0,0,0,.2);
+}
+.sp-content code{
+  background:#f1f5f9;
+  padding:.18rem .55rem;border-radius:6px;
+  font-size:.875em;
+  font-family:'Courier New',monospace;
+  color:#0d6e7a;font-weight:500;
+}
+.sp-content pre code{background:transparent;padding:0;color:#e2e8f0;font-weight:400;}
+
+/* Table */
+.sp-content table{
+  width:100%;border-collapse:collapse;
+  margin:2rem 0;border-radius:12px;
+  overflow:hidden;
+  box-shadow:0 4px 20px rgba(0,0,0,.06);
+  font-size:.9rem;
+}
+.sp-content th{
+  background:linear-gradient(135deg,#073f47,#0d6e7a);
+  color:#fff;padding:.9rem 1.1rem;
+  text-align:left;font-weight:600;font-size:.82rem;
+  letter-spacing:.04em;text-transform:uppercase;
+}
+.sp-content td{
+  padding:.8rem 1.1rem;
+  border-bottom:1px solid #f1f5f9;
+}
+.sp-content tr:nth-child(even) td{background:#f8fafc;}
+.sp-content tr:hover td{background:#f0f9fb;transition:background .15s;}
+
+/* ---- Author card ---- */
+.sp-author-card{
+  display:flex;align-items:flex-start;gap:1.25rem;
+  margin:3rem 0 0;
+  padding:1.75rem;
+  background:linear-gradient(135deg,#f0f9fb,#eef7f9);
+  border-radius:18px;
+  border:1px solid rgba(13,110,122,.12);
+  box-shadow:0 4px 20px rgba(13,110,122,.05);
+}
+.sp-author-card-av{
+  width:52px;height:52px;
+  background:linear-gradient(135deg,#073f47,#0d6e7a);
+  border-radius:50%;
+  display:grid;place-items:center;
+  color:#fff;font-size:1.25rem;font-weight:700;
+  flex-shrink:0;
+  box-shadow:0 4px 16px rgba(13,110,122,.25);
+}
+.sp-author-card-name{font-weight:700;color:#0f172a;font-size:.95rem;}
+.sp-author-card-role{
+  font-size:.78rem;color:#0d6e7a;
+  font-weight:600;margin-top:2px;
+}
+.sp-author-card-bio{
+  font-size:.85rem;color:#64788a;
+  line-height:1.65;margin-top:.5rem;
+}
+
+/* ---- FAQ ---- */
+.sp-faq{margin-top:3rem;}
+.sp-faq-heading{
+  font-family:'Playfair Display',serif;
+  font-size:1.4rem;font-weight:700;
+  color:#0f172a;margin-bottom:1.25rem;
+}
+.sp-faq-item{
+  border-bottom:1px solid #f1f5f9;
+  transition:background .2s;
+}
+.sp-faq-btn{
+  width:100%;display:flex;align-items:center;
+  justify-content:space-between;gap:1rem;
+  padding:1.1rem 0;font-size:.95rem;font-weight:600;
+  color:#0f172a;cursor:pointer;background:none;
+  border:none;text-align:left;font-family:inherit;
+  transition:color .2s;
+}
+.sp-faq-btn:hover{color:#0d6e7a;}
+.sp-faq-ch{
+  flex-shrink:0;
+  width:28px;height:28px;
+  background:#f1f5f9;
+  border-radius:50%;
+  display:grid;place-items:center;
+  transition:all .25s;
+  color:#94a3b8;
+}
+.sp-faq-btn:hover .sp-faq-ch{background:#eef7f9;color:#0d6e7a;}
+.sp-faq-ans{
+  display:none;
+  padding-bottom:1.25rem;
+  color:#64788a;font-size:.9rem;line-height:1.8;
+}
+.sp-faq-ans.open{display:block;}
+.sp-faq-btn.open .sp-faq-ch{transform:rotate(180deg);background:#0d6e7a;color:#fff;}
+
+/* ---- Prev/Next ---- */
+.sp-nav{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:1rem;margin-top:2.5rem;
+  padding-top:2rem;
+  border-top:1px solid #f1f5f9;
+}
+.sp-nav-item{
+  background:#f8fafc;
+  border:1.5px solid #e8eef2;
+  border-radius:14px;
+  padding:1.15rem 1.25rem;
+  transition:all .25s;
+  display:block;text-decoration:none;
+}
+.sp-nav-item:hover{
+  border-color:#0d6e7a;
+  background:linear-gradient(135deg,#eef7f9,#f0fbfd);
+  transform:translateY(-3px);
+  box-shadow:0 8px 24px rgba(13,110,122,.1);
+}
+.sp-nav-dir{
+  font-size:.68rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;
+  color:#94a3b8;margin-bottom:.4rem;
+  display:flex;align-items:center;gap:.35rem;
+}
+.sp-nav-item:hover .sp-nav-dir{color:#0d6e7a;}
+.sp-nav-t{
+  font-weight:600;color:#0f172a;
+  font-size:.875rem;line-height:1.4;
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+}
+.sp-nav-item:last-child{text-align:right;}
+.sp-nav-item:last-child .sp-nav-dir{justify-content:flex-end;}
+
+/* ============================================================
+   SIDEBAR — Premium Glass Cards
+   ============================================================ */
+.sp-sidebar{
+  display:flex;flex-direction:column;gap:1.5rem;
+  position:sticky;top:100px;
+  animation:fadeUp .5s .25s cubic-bezier(.22,1,.36,1) both;
+}
+
+/* CTA widget */
+.sp-cta-widget{
+  position:relative;
+  background:linear-gradient(145deg,#052e35,#073f47 50%,#0a5a68);
+  border-radius:20px;
+  padding:2rem;
+  overflow:hidden;
+  border:1px solid rgba(13,110,122,.3);
+  box-shadow:0 20px 60px -10px rgba(7,63,71,.4);
+}
+.sp-cta-widget::before{
+  content:'';position:absolute;
+  top:-40px;right:-40px;
+  width:160px;height:160px;
+  background:radial-gradient(circle,rgba(125,232,184,.15),transparent 70%);
+  border-radius:50%;pointer-events:none;
+}
+.sp-cta-widget::after{
+  content:'';position:absolute;
+  bottom:-30px;left:-20px;
+  width:120px;height:120px;
+  background:radial-gradient(circle,rgba(249,115,22,.1),transparent 70%);
+  border-radius:50%;pointer-events:none;
+}
+.sp-cta-pulse{
+  display:inline-flex;align-items:center;gap:.5rem;
+  background:rgba(125,232,184,.15);
+  border:1px solid rgba(125,232,184,.2);
+  border-radius:9999px;
+  padding:.3rem .85rem;
+  font-size:.68rem;font-weight:700;
+  color:#7de8b8;
+  letter-spacing:.08em;text-transform:uppercase;
+  margin-bottom:1rem;
+}
+.sp-cta-pulse-dot{
+  width:6px;height:6px;
+  background:#7de8b8;border-radius:50%;
+  animation:glow 2s ease infinite;
+}
+.sp-cta-title{
+  font-family:'Playfair Display',serif;
+  font-size:1.2rem;font-weight:700;
+  color:#fff;margin-bottom:.6rem;
+  line-height:1.25;
+  position:relative;z-index:1;
+}
+.sp-cta-desc{
+  font-size:.8rem;color:rgba(255,255,255,.6);
+  margin-bottom:1.35rem;line-height:1.65;
+  position:relative;z-index:1;
+}
+.sp-cta-btn{
+  display:flex;align-items:center;justify-content:center;gap:.5rem;
+  background:linear-gradient(135deg,#f97316,#ea6910);
+  color:#fff;padding:.9rem 1.25rem;
+  border-radius:12px;font-weight:700;font-size:.9rem;
+  text-decoration:none;
+  transition:all .25s;
+  position:relative;z-index:1;
+  box-shadow:0 8px 24px rgba(249,115,22,.3);
+}
+.sp-cta-btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 12px 32px rgba(249,115,22,.4);
+}
+.sp-cta-btn svg{width:16px;height:16px;}
+.sp-cta-sub{
+  display:flex;align-items:center;justify-content:center;gap:.4rem;
+  font-size:.7rem;color:rgba(255,255,255,.4);
+  margin-top:.85rem;
+  position:relative;z-index:1;
+}
+.sp-cta-sub svg{width:12px;height:12px;opacity:.6;}
+
+/* Sidebar widget */
+.sp-widget{
+  background:#fff;
+  border-radius:20px;
+  overflow:hidden;
+  border:1px solid rgba(226,234,238,.8);
+  box-shadow:0 4px 6px -1px rgba(0,0,0,.04),0 12px 40px -8px rgba(0,0,0,.06);
+  transition:box-shadow .3s;
+}
+.sp-widget:hover{box-shadow:0 4px 6px -1px rgba(0,0,0,.05),0 20px 50px -10px rgba(0,0,0,.1);}
+
+.sp-widget-head{
+  padding:1rem 1.4rem;
+  font-size:.68rem;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;
+  color:#94a3b8;
+  background:linear-gradient(135deg,#f8fafc,#f1f5f9);
+  border-bottom:1px solid #f1f5f9;
+  display:flex;align-items:center;gap:.5rem;
+}
+.sp-widget-head-icon{
+  width:22px;height:22px;
+  background:linear-gradient(135deg,#0d6e7a,#1a8fa8);
+  border-radius:6px;
+  display:grid;place-items:center;
+  flex-shrink:0;
+}
+.sp-widget-head-icon svg{width:12px;height:12px;color:#fff;}
+.sp-widget-body{padding:1.1rem 1.25rem;}
+
+/* Recent articles */
+.sp-recent-item{
+  display:flex;gap:.85rem;align-items:flex-start;
+  padding:.85rem 0;
+  border-bottom:1px solid #f8fafc;
+  text-decoration:none;
+  transition:all .2s;
+  border-radius:8px;
+  margin-inline:-.25rem;
+  padding-inline:.25rem;
+}
+.sp-recent-item:last-child{border-bottom:0;padding-bottom:0;}
+.sp-recent-item:first-child{padding-top:0;}
+.sp-recent-item:hover{
+  background:#f8fafc;
+  padding-left:.75rem;
+}
+.sp-recent-thumb{
+  width:64px;height:48px;
+  border-radius:8px;
+  object-fit:cover;
+  flex-shrink:0;
+  background:linear-gradient(135deg,#073f47,#0d6e7a);
+}
+.sp-recent-title{
+  font-size:.82rem;font-weight:600;
+  color:#0f172a;line-height:1.4;
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+  transition:color .2s;
+}
+.sp-recent-item:hover .sp-recent-title{color:#0d6e7a;}
+.sp-recent-date{
+  font-size:.7rem;color:#94a3b8;
+  margin-top:.3rem;
+  display:flex;align-items:center;gap:.3rem;
+}
+.sp-recent-date svg{width:11px;height:11px;}
+
+/* Category pills */
+.sp-cats-grid{
+  display:flex;flex-wrap:wrap;gap:.5rem;
+  padding:.25rem 0;
+}
+.sp-cat-pill{
+  display:inline-flex;align-items:center;gap:.4rem;
+  padding:.4rem .85rem;
+  border-radius:9999px;
+  font-size:.75rem;font-weight:600;
+  text-decoration:none;
+  border:1.5px solid;
+  transition:all .22s;
+  cursor:pointer;
+}
+.sp-cat-pill:hover{transform:translateY(-2px);box-shadow:0 4px 14px rgba(0,0,0,.1);}
+.sp-cat-pill-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.sp-cat-pill-count{
+  background:rgba(0,0,0,.08);
+  padding:.1rem .4rem;
+  border-radius:9999px;
+  font-size:.65rem;
+  font-weight:700;
+}
+
+/* ============================================================
+   RELATED POSTS
+   ============================================================ */
+.sp-related{
+  background:#fff;
+  border-top:1px solid #f1f5f9;
+  padding:4rem 0;
+}
+.sp-related-inner{
+  max-width:1240px;
+  margin-inline:auto;
+  padding-inline:clamp(1.25rem,4vw,2.5rem);
+}
+.sp-related-header{
+  display:flex;align-items:baseline;
+  justify-content:space-between;
+  margin-bottom:2rem;flex-wrap:wrap;gap:.75rem;
+}
+.sp-related-title{
+  font-family:'Playfair Display',serif;
+  font-size:1.5rem;font-weight:700;color:#0f172a;
+}
+.sp-related-link{
+  font-size:.82rem;font-weight:600;color:#0d6e7a;
+  text-decoration:none;display:flex;align-items:center;gap:.35rem;
+  transition:gap .2s;
+}
+.sp-related-link:hover{gap:.6rem;}
+.sp-related-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;
+}
+.sp-rel-card{
+  background:#fff;
+  border:1px solid #e8eef2;
+  border-radius:18px;overflow:hidden;
+  transition:all .28s;
+  text-decoration:none;display:block;
+  box-shadow:0 2px 8px rgba(0,0,0,.04);
+}
+.sp-rel-card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 20px 50px rgba(0,0,0,.1);
+  border-color:rgba(13,110,122,.15);
+}
+.sp-rel-card-img{
+  width:100%;aspect-ratio:16/9;
+  object-fit:cover;display:block;
+  transition:transform .4s;
+}
+.sp-rel-card:hover .sp-rel-card-img{transform:scale(1.04);}
+.sp-rel-card-img-wrap{overflow:hidden;}
+.sp-rel-card-body{padding:1.25rem;}
+.sp-rel-card-cat{
+  display:inline-block;
+  font-size:.65rem;font-weight:700;
+  letter-spacing:.08em;text-transform:uppercase;
+  color:#0d6e7a;margin-bottom:.5rem;
+}
+.sp-rel-card-title{
+  font-weight:700;color:#0f172a;
+  font-size:.9rem;line-height:1.45;
+  display:-webkit-box;-webkit-line-clamp:2;
+  -webkit-box-orient:vertical;overflow:hidden;
+  margin-bottom:.6rem;
+  transition:color .2s;
+}
+.sp-rel-card:hover .sp-rel-card-title{color:#0d6e7a;}
+.sp-rel-card-meta{
+  font-size:.72rem;color:#94a3b8;
+  display:flex;align-items:center;gap:.4rem;
+}
+
+/* ============================================================
+   LOADING & 404
+   ============================================================ */
+.sp-loading{
+  display:flex;flex-direction:column;align-items:center;
+  justify-content:center;min-height:60vh;gap:1rem;
+  color:#64788a;font-size:.9rem;
+}
+.sp-loading-spinner{
+  width:40px;height:40px;
+  border:3px solid #e2eaee;
+  border-top-color:#0d6e7a;
+  border-radius:50%;
+  animation:spin 1s linear infinite;
+}
+.sp-404{
+  text-align:center;padding:8rem 2rem;
+}
+.sp-404-icon{font-size:4rem;margin-bottom:1rem;opacity:.5;}
+.sp-404-title{
+  font-family:'Playfair Display',serif;
+  font-size:1.75rem;color:#0f172a;margin-bottom:.75rem;
+}
+.sp-404-desc{color:#64788a;margin-bottom:2rem;}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media(max-width:1024px){
+  .sp-main-inner{grid-template-columns:1fr!important;}
+  .sp-sidebar{position:static;}
+  .sp-related-grid{grid-template-columns:1fr 1fr!important;}
+}
+@media(max-width:640px){
+  .sp-nav{grid-template-columns:1fr!important;}
+  .sp-related-grid{grid-template-columns:1fr!important;}
+  .sp-hero-title{font-size:1.85rem;}
+  .sp-hero-author{width:100%;}
+  .sp-article-body{padding:1.5rem;}
+  .sp-share{gap:.5rem;}
+}
+</style>
+</head>
+<body data-page="blog">
+<div data-inc="../partials/header.html"></div>
+<main>
+
+<!-- LOADING -->
+<div id="spLoading" class="sp-loading">
+  <div class="sp-loading-spinner"></div>
+  <span>Loading article…</span>
+</div>
+
+<!-- 404 -->
+<div id="sp404" style="display:none;">
+  <div class="sp-404">
+    <div class="sp-404-icon">📄</div>
+    <h2 class="sp-404-title">Post Not Found</h2>
+    <p class="sp-404-desc">This article doesn't exist or may have been removed.</p>
+    <a href="blog.html" class="btn btn-primary">← Back to Blog</a>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div id="spWrap" style="display:none;">
+
+  <!-- ===== HERO ===== -->
+  <div class="sp-hero">
+    <div class="sp-hero-bg"></div>
+    <div class="sp-hero-orb sp-hero-orb-1"></div>
+    <div class="sp-hero-orb sp-hero-orb-2"></div>
+    <div class="sp-hero-orb sp-hero-orb-3"></div>
+    <div class="sp-hero-grid"></div>
+    <div class="sp-hero-noise"></div>
+
+    <div class="sp-hero-inner">
+      <!-- Breadcrumb -->
+      <div class="sp-breadcrumb">
+        <a href="index.html">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          Home
+        </a>
+        <span class="sp-breadcrumb-sep">›</span>
+        <a href="blog.html">Blog</a>
+        <span class="sp-breadcrumb-sep">›</span>
+        <span class="sp-breadcrumb-cur" id="spBreadCat">Article</span>
+      </div>
+
+      <!-- Category + meta -->
+      <div class="sp-hero-meta">
+        <span class="sp-hero-cat" id="spCat">
+          <span class="sp-hero-cat-dot"></span>
+          Health Tips
+        </span>
+        <span class="sp-hero-divider"></span>
+        <span class="sp-hero-metaitem">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span id="spRead">— min read</span>
+        </span>
+        <span class="sp-hero-divider"></span>
+        <span class="sp-hero-metaitem">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          <span id="spDate"></span>
+        </span>
+      </div>
+
+      <!-- Title -->
+      <h1 class="sp-hero-title" id="spTitle"></h1>
+
+      <!-- Author -->
+      <div class="sp-hero-author">
+        <div class="sp-hero-av" id="spAv"></div>
+        <div class="sp-hero-author-info">
+          <div class="sp-hero-author-name" id="spAuthor"></div>
+          <div class="sp-hero-author-role">Sanova Medical Team · Urgent Care Specialist</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Wave -->
+    <svg class="sp-hero-wave" viewBox="0 0 1440 72" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,36 C240,72 480,0 720,36 C960,72 1200,0 1440,36 L1440,72 L0,72 Z" fill="#f0f4f8"/>
+    </svg>
+  </div>
+
+  <!-- ===== MAIN LAYOUT ===== -->
+  <div class="sp-main">
+    <div class="sp-main-inner">
+
+      <!-- Article -->
+      <article class="sp-article">
+
+        <!-- Featured image at TOP of article -->
+        <div id="spFeatWrap" style="display:none;">
+          <img id="spFeatImg" src="" alt="" class="sp-feat-img"/>
+        </div>
+        <div id="spFeatPlaceholder" class="sp-feat-img-placeholder" style="display:none;"></div>
+
+        <div class="sp-article-body">
+
+          <!-- Content -->
+          <div class="sp-content" id="spContent"></div>
+
+          <!-- Share bar — BELOW content -->
+          <div class="sp-share" style="margin-top:2.5rem;border-top:1px solid #f1f5f9;border-bottom:none;padding-top:1.5rem;padding-bottom:0;margin-bottom:0;">
+            <span class="sp-share-label">Share this article</span>
+            <button class="sp-share-btn" onclick="doShare('twitter')" style="color:#1DA1F2;border-color:#bae6fd;">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"/></svg>
+              Twitter
+            </button>
+            <button class="sp-share-btn" onclick="doShare('facebook')" style="color:#1877F2;border-color:#bfdbfe;">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
+              Facebook
+            </button>
+            <button class="sp-share-btn" onclick="doShare('copy')" id="spCopyBtn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+              Copy Link
+            </button>
+          </div>
+
+          <!-- Author card -->
+          <div class="sp-author-card">
+            <div class="sp-author-card-av" id="spAvCard"></div>
+            <div>
+              <div class="sp-author-card-name" id="spAuthorCard"></div>
+              <div class="sp-author-card-role">Medical Team · Sanova Urgent Care</div>
+              <div class="sp-author-card-bio">Board-certified medical professionals at Sanova Urgent Care, Tucson, AZ. Committed to fast, compassionate walk-in care for the whole family.</div>
+            </div>
+          </div>
+
+          <!-- FAQ -->
+          <div class="sp-faq" id="spFaq" style="display:none;">
+            <div class="sp-faq-heading">Frequently Asked Questions</div>
+            <div id="spFaqItems"></div>
+          </div>
+
+          <!-- Prev/Next -->
+          <div class="sp-nav" id="spNav"></div>
+
+        </div>
+      </article>
+
+      <!-- ===== SIDEBAR ===== -->
+      <aside class="sp-sidebar">
+
+        <!-- CTA -->
+        <div class="sp-cta-widget">
+          <div class="sp-cta-pulse">
+            <span class="sp-cta-pulse-dot"></span>
+            Now Open
+          </div>
+          <div class="sp-cta-title">Need Urgent Care?</div>
+          <div class="sp-cta-desc">Walk in anytime, no appointment needed. Monday–Saturday, 7AM to 7PM. Fast care for the whole family.</div>
+          <a href="tel:5202322525" class="sp-cta-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A2 2 0 014.11 2h3a2 2 0 012 1.72c.13.96.37 1.9.72 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.91.35 1.85.59 2.81.72A2 2 0 0122 16.92z"/></svg>
+            Call 520-232-2525
+          </a>
+          <div class="sp-cta-sub">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            15883 N Oracle Rd · Tucson, AZ
+          </div>
+        </div>
+
+        <!-- Recent Articles -->
+        <div class="sp-widget">
+          <div class="sp-widget-head">
+            <div class="sp-widget-head-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg>
+            </div>
+            Recent Articles
+          </div>
+          <div class="sp-widget-body" id="spRecent">
+            <div style="display:flex;justify-content:center;padding:1rem;">
+              <div style="width:24px;height:24px;border:2px solid #e2eaee;border-top-color:#0d6e7a;border-radius:50%;animation:spin 1s linear infinite;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Categories -->
+        <div class="sp-widget">
+          <div class="sp-widget-head">
+            <div class="sp-widget-head-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+            </div>
+            Categories
+          </div>
+          <div class="sp-widget-body" id="spCats">
+            <div style="display:flex;justify-content:center;padding:1rem;">
+              <div style="width:24px;height:24px;border:2px solid #e2eaee;border-top-color:#0d6e7a;border-radius:50%;animation:spin 1s linear infinite;"></div>
+            </div>
+          </div>
+        </div>
+
+      </aside>
+    </div>
+  </div>
+
+  <!-- Related Posts -->
+  <div class="sp-related" id="spRelated" style="display:none;">
+    <div class="sp-related-inner">
+      <div class="sp-related-header">
+        <div class="sp-related-title">You Might Also Like</div>
+        <a href="blog.html" class="sp-related-link">
+          View all articles
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+      <div class="sp-related-grid" id="spRelatedGrid"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- CTA Section -->
+<section class="section cta-section">
+  <div class="container cta-inner section-sm" style="padding-block:clamp(3rem,6vw,5rem);">
+    <h2 class="cta-title">Walk In Today — <em>No Appointment Needed</em></h2>
+    <p class="cta-sub">Monday–Saturday, 7AM–7PM · 15883 N Oracle Rd, Tucson, AZ</p>
+    <div class="cta-btns">
+      <a href="tel:5202322525" class="btn btn-accent btn-lg">Call 520-232-2525</a>
+      <a href="contact.html" class="btn btn-outline-white btn-lg">Get Directions</a>
+    </div>
+  </div>
+</section>
+
+</main>
+<div data-inc="../partials/faq.html"></div>
+<div data-inc="../partials/footer.html"></div>
+<script src="../js/main.js"></script>
+<script>
+(function(){
+  var SB_URL='https://fogkdxevecwnqbmezdnu.supabase.co';
+  var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZvZ2tkeGV2ZWN3bnFibWV6ZG51Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk5NDg0NzgsImV4cCI6MjA4NTUyNDQ3OH0.Gy8nDxKZFvPHrp2-r7bQILCn-zl0QmH5bb52tIVDOv0';
+  var sb=supabase.createClient(SB_URL,SB_KEY);
+  var rawSlug=new URLSearchParams(location.search).get('slug')||location.pathname.split('/blog/')[1]||'';
+var slug=rawSlug.replace(/\/+$/,'').trim();
+
+  var catColors=[
+    {bg:'#eef7f9',text:'#0d6e7a',border:'#b3dfe5'},
+    {bg:'#eff6ff',text:'#1d4ed8',border:'#bfdbfe'},
+    {bg:'#f0fdf4',text:'#15803d',border:'#bbf7d0'},
+    {bg:'#fffbeb',text:'#b45309',border:'#fde68a'},
+    {bg:'#faf5ff',text:'#7c3aed',border:'#e9d5ff'},
+    {bg:'#f0f9ff',text:'#0891b2',border:'#bae6fd'},
+    {bg:'#fff7ed',text:'#c2410c',border:'#fed7aa'},
+    {bg:'#fdf2f8',text:'#9d174d',border:'#fbcfe8'},
+  ];
+
+  if(!slug){
+  window.location.href='/blog';
+  return;
+  }
+
+  function fmtDate(d){
+    return new Date(d).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+  }
+  function fmtDateShort(d){
+    return new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+  }
+  function readTime(c){
+    var words=(c||'').replace(/<[^>]+>/g,'').trim().split(/\s+/).length;
+    return Math.max(1,Math.round(words/200))+' min read';
+  }
+
+  window.doShare=function(p){
+    var url=encodeURIComponent(location.href);
+    var title=encodeURIComponent(document.getElementById('spTitle').textContent);
+    if(p==='twitter') window.open('https://twitter.com/intent/tweet?url='+url+'&text='+title,'_blank');
+    else if(p==='facebook') window.open('https://www.facebook.com/sharer/sharer.php?u='+url,'_blank');
+    else if(p==='copy'){
+      navigator.clipboard.writeText(location.href).then(function(){
+        var btn=document.getElementById('spCopyBtn');
+        btn.textContent='✓ Copied!';
+        btn.style.color='#15803d';
+        btn.style.borderColor='#bbf7d0';
+        setTimeout(function(){
+          btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="13" height="13"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy Link';
+          btn.style.color='';btn.style.borderColor='';
+        },2000);
+      });
+    }
+  };
+
+  window.toggleFaq=function(btn){
+    var ans=btn.nextElementSibling;
+    var open=ans.classList.contains('open');
+    document.querySelectorAll('.sp-faq-ans').forEach(function(a){a.classList.remove('open');});
+    document.querySelectorAll('.sp-faq-btn').forEach(function(b){b.classList.remove('open');});
+    if(!open){ans.classList.add('open');btn.classList.add('open');}
+  };
+
+  async function load(){
+    var res=await sb.from('blogs').select('*').eq('slug',slug).single();
+    var post=res.data;
+
+    document.getElementById('spLoading').style.display='none';
+
+    if(res.error||!post){
+      document.getElementById('sp404').style.display='block';
+      return;
+    }
+
+    // Track view
+    await sb.from('blogs').update({views:(post.views||0)+1}).eq('id',post.id);
+
+    // Meta
+    document.getElementById('pageTitle').textContent=(post.meta_title||post.title)+' | Sanova Urgent Care';
+    document.getElementById('pageDesc').content=post.meta_description||post.excerpt||'';
+
+    // Hero
+    var catName=post.category_name||'Health Tips';
+    document.getElementById('spCat').innerHTML='<span class="sp-hero-cat-dot"></span>'+catName;
+    document.getElementById('spBreadCat').textContent=catName;
+    document.getElementById('spRead').textContent=readTime(post.content);
+    document.getElementById('spDate').textContent=fmtDate(post.published_at||post.created_at);
+    document.getElementById('spTitle').textContent=post.title;
+
+    var author=post.author||'Sanova Medical Team';
+    document.getElementById('spAv').textContent=author.charAt(0).toUpperCase();
+    document.getElementById('spAuthor').textContent=author;
+
+    // Featured image — inside article, above content
+    if(post.featured_image){
+      document.getElementById('spFeatImg').src=post.featured_image;
+      document.getElementById('spFeatImg').alt=post.title;
+      document.getElementById('spFeatWrap').style.display='block';
+    } else {
+      document.getElementById('spFeatPlaceholder').style.display='block';
+    }
+
+    // Content
+    document.getElementById('spContent').innerHTML=post.content||'';
+
+    // Author card
+    document.getElementById('spAvCard').textContent=author.charAt(0).toUpperCase();
+    document.getElementById('spAuthorCard').textContent=author;
+
+    // FAQ
+    if(post.faq&&post.faq.length){
+      document.getElementById('spFaq').style.display='block';
+      document.getElementById('spFaqItems').innerHTML=post.faq.map(function(f){
+        return '<div class="sp-faq-item">'+
+          '<button class="sp-faq-btn" onclick="toggleFaq(this)">'+
+          '<span>'+f.q+'</span>'+
+          '<span class="sp-faq-ch"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></span>'+
+          '</button>'+
+          '<div class="sp-faq-ans">'+f.a+'</div></div>';
+      }).join('');
+    }
+
+    // Prev/Next
+    var pr=await sb.from('blogs').select('title,slug').eq('published',true).lt('created_at',post.created_at).order('created_at',{ascending:false}).limit(1);
+    var nx=await sb.from('blogs').select('title,slug').eq('published',true).gt('created_at',post.created_at).order('created_at',{ascending:true}).limit(1);
+    var prev=pr.data&&pr.data[0];
+    var next=nx.data&&nx.data[0];
+    document.getElementById('spNav').innerHTML=
+      (prev?'<a href="/blog/'+prev.slug+'" class="sp-nav-item"><div class="sp-nav-dir"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Previous</div><div class="sp-nav-t">'+prev.title+'</div></a>':'<div></div>')+
+      (next?'<a href="/blog/'+next.slug+'" class="sp-nav-item"><div class="sp-nav-dir">Next <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div><div class="sp-nav-t">'+next.title+'</div></a>':'<div></div>');
+
+    // Sidebar — Recent
+    var recRes=await sb.from('blogs').select('title,slug,featured_image,published_at,created_at').eq('published',true).neq('id',post.id).order('created_at',{ascending:false}).limit(5);
+    var recent=recRes.data||[];
+    document.getElementById('spRecent').innerHTML=recent.length?recent.map(function(r){
+      return '<a href="/blog/'+r.slug+'" class="sp-recent-item">'+
+        (r.featured_image
+          ?'<img src="'+r.featured_image+'" class="sp-recent-thumb" loading="lazy" alt="'+r.title+'">'
+          :'<div class="sp-recent-thumb"></div>')+
+        '<div><div class="sp-recent-title">'+r.title+'</div>'+
+        '<div class="sp-recent-date"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>'+fmtDateShort(r.published_at||r.created_at)+'</div></div></a>';
+    }).join(''):'<p style="font-size:.82rem;color:#94a3b8;text-align:center;padding:.5rem 0;">No other posts yet</p>';
+
+    // Sidebar — Categories
+    var catRes=await sb.from('categories').select('id,name,slug');
+    var cats=catRes.data||[];
+    var blogsRes=await sb.from('blogs').select('category_id').eq('published',true);
+    var cmap={};
+    (blogsRes.data||[]).forEach(function(b){if(b.category_id)cmap[b.category_id]=(cmap[b.category_id]||0)+1;});
+    document.getElementById('spCats').innerHTML='<div class="sp-cats-grid">'+(cats.length?cats.map(function(c,i){
+      var col=catColors[i%catColors.length];
+      return '<a href="blog.html" class="sp-cat-pill" style="background:'+col.bg+';color:'+col.text+';border-color:'+col.border+';">'+
+        '<span class="sp-cat-pill-dot" style="background:'+col.text+';"></span>'+
+        c.name+
+        '<span class="sp-cat-pill-count">'+(cmap[c.id]||0)+'</span></a>';
+    }).join(''):'<p style="font-size:.82rem;color:#94a3b8;">No categories</p>')+'</div>';
+
+    // Related
+    var relRes=await sb.from('blogs').select('title,slug,featured_image,published_at,created_at').eq('published',true).neq('id',post.id).limit(3);
+    var rel=relRes.data||[];
+    if(rel.length){
+      document.getElementById('spRelated').style.display='block';
+      document.getElementById('spRelatedGrid').innerHTML=rel.map(function(r){
+        return '<a href="/blog/'+r.slug+'" class="sp-rel-card">'+
+          '<div class="sp-rel-card-img-wrap">'+
+          (r.featured_image
+            ?'<img src="'+r.featured_image+'" alt="'+r.title+'" class="sp-rel-card-img" loading="lazy">'
+            :'<div style="aspect-ratio:16/9;background:linear-gradient(135deg,#073f47,#0d6e7a,#1a8fa8);"></div>')+
+          '</div>'+
+          '<div class="sp-rel-card-body">'+
+          '<div class="sp-rel-card-cat">Health Tips</div>'+
+          '<div class="sp-rel-card-title">'+r.title+'</div>'+
+          '<div class="sp-rel-card-meta"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>'+fmtDateShort(r.published_at||r.created_at)+'</div>'+
+          '</div></a>';
+      }).join('');
+    }
+
+    // Show & scroll top
+    document.getElementById('spWrap').style.display='block';
+    window.scrollTo(0,0);
+  }
+
+  load();
+})();
+</script>
+</body>
+</html>
