@@ -71,7 +71,7 @@ async function updatePassword(){
 
 async function signOutAll(){
   await sb.auth.signOut({scope:'global'});
-  location.href='login.html';
+  location.href='/admin';
 }
 
 async function doLogout(){await sb.auth.signOut();location.href='/admin';}

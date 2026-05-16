@@ -17,22 +17,5 @@
     { "source": "/admin/categories", "destination": "/admin/categories.html" },
     { "source": "/admin/analytics", "destination": "/admin/analytics.html" },
     { "source": "/admin/settings", "destination": "/admin/settings.html" }
-  ],
-  "redirects": [
-    { "source": "/index.html", "destination": "/", "permanent": true },
-    { "source": "/blog.html", "destination": "/blog", "permanent": true },
-    { "source": "/contact.html", "destination": "/contact", "permanent": true },
-    { "source": "/services.html", "destination": "/services", "permanent": true },
-    { "source": "/gallery.html", "destination": "/gallery", "permanent": true },
-    { "source": "/meet-the-team.html", "destination": "/meet-the-team", "permanent": true },
-    { "source": "/patient-info.html", "destination": "/patient-info", "permanent": true },
-    { "source": "/iv-hydration.html", "destination": "/iv-hydration", "permanent": true },
-    { "source": "/admin/dashboard.html", "destination": "/admin/dashboard", "permanent": true },
-    { "source": "/admin/blogs.html", "destination": "/admin/blogs", "permanent": true },
-    { "source": "/admin/create-blog.html", "destination": "/admin/create-blog", "permanent": true },
-    { "source": "/admin/categories.html", "destination": "/admin/categories", "permanent": true },
-    { "source": "/admin/analytics.html", "destination": "/admin/analytics", "permanent": true },
-    { "source": "/admin/settings.html", "destination": "/admin/settings", "permanent": true },
-    { "source": "/admin/login.html", "destination": "/admin", "permanent": true }
   ]
 }
