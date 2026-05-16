@@ -1796,7 +1796,7 @@ html.js-on .reveal.visible { opacity: 1; transform: none; }
 
 .hero-v3 {
   background: var(--c-bg);
-  padding-top: clamp(1.5rem, 3vw, 2.5rem);
+  padding-top: 15px;
 }
 
 /* ---- Image wrapper — contained, centered, rounded ---- */
@@ -1810,7 +1810,7 @@ html.js-on .reveal.visible { opacity: 1; transform: none; }
 .hero-v3-img-inner {
   position: relative;
   width: 100%;
-  height: clamp(420px, 65vh, 720px);
+  height: clamp(500px, 65vh, 720px);
   border-radius: var(--r-2xl);
   overflow: hidden;
   box-shadow: 0 12px 48px -8px rgba(13,110,122,.18);
@@ -1818,7 +1818,7 @@ html.js-on .reveal.visible { opacity: 1; transform: none; }
 .hero-v3-img {
   position: absolute;
   inset: 0;
-  background: url('../assets/bg.webp') center 30%/cover no-repeat;
+  background: url('../assets/bg.webp') center 50%/cover no-repeat;
   transform-origin: center;
 }
 
