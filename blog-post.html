@@ -1036,9 +1036,8 @@
   ];
 
   if(!slug){
-    document.getElementById('spLoading').style.display='none';
-    document.getElementById('sp404').style.display='block';
-    return;
+  window.location.href='/blog';
+  return;
   }
 
   function fmtDate(d){
