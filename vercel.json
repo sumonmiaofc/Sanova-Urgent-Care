@@ -17,5 +17,15 @@
     { "source": "/admin/categories", "destination": "/admin/categories.html" },
     { "source": "/admin/analytics", "destination": "/admin/analytics.html" },
     { "source": "/admin/settings", "destination": "/admin/settings.html" }
+  ],
+  "redirects": [
+    { "source": "/index.html", "destination": "/", "permanent": true },
+    { "source": "/blog.html", "destination": "/blog", "permanent": true },
+    { "source": "/contact.html", "destination": "/contact", "permanent": true },
+    { "source": "/services.html", "destination": "/services", "permanent": true },
+    { "source": "/gallery.html", "destination": "/gallery", "permanent": true },
+    { "source": "/meet-the-team.html", "destination": "/meet-the-team", "permanent": true },
+    { "source": "/patient-info.html", "destination": "/patient-info", "permanent": true },
+    { "source": "/iv-hydration.html", "destination": "/iv-hydration", "permanent": true }
   ]
 }
