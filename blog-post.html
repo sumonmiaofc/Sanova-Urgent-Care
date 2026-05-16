@@ -5,14 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title id="pageTitle">Blog | Sanova Urgent Care</title>
 <meta name="description" content="" id="pageDesc"/>
-<meta property="og:title" content="" id="ogTitle"/>
-<meta property="og:description" content="" id="ogDesc"/>
-<meta property="og:image" content="" id="ogImage"/>
-<meta property="og:type" content="article"/>
-<meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:title" content="" id="twTitle"/>
-<meta name="twitter:description" content="" id="twDesc"/>
-<link rel="canonical" href="" id="canonicalLink"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link rel="icon" type="image/png" href="assets/favicon.png" sizes="32x32">
@@ -21,211 +13,133 @@
 <link rel="stylesheet" href="css/style.css"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-/* Single post styles */
-.post-hero { background: linear-gradient(135deg,var(--c-teal-dark),var(--c-teal)); padding: clamp(3rem,7vw,5rem) 0; }
-.post-hero-inner { max-width: 860px; }
-.post-back { display:inline-flex;align-items:center;gap:.5rem;color:rgba(255,255,255,.7);font-size:.85rem;margin-bottom:1.5rem;text-decoration:none;transition:color .2s; }
-.post-back:hover { color:#fff; }
-.post-cat-badge { display:inline-block;padding:.3rem .9rem;border-radius:9999px;font-size:.72rem;font-weight:700;margin-bottom:1rem;background:rgba(255,255,255,.15);color:#fff;letter-spacing:.04em; }
-.post-hero-title { font-family:'Playfair Display',serif;font-size:clamp(1.75rem,4vw,2.75rem);font-weight:700;color:#fff;line-height:1.15;letter-spacing:-.025em;margin-bottom:1rem; }
-.post-hero-meta { display:flex;flex-wrap:wrap;gap:1.25rem;color:rgba(255,255,255,.7);font-size:.85rem; }
-.post-hero-meta span { display:flex;align-items:center;gap:.4rem; }
-
-.post-featured-img { width:100%;max-width:900px;margin:0 auto;display:block;border-radius:0 0 20px 20px;aspect-ratio:16/7;object-fit:cover; }
-
-.post-layout { display:grid;grid-template-columns:240px 1fr;gap:3rem;max-width:1100px;margin:0 auto;padding:3rem var(--px); }
-
-/* Table of contents */
-.toc { position:sticky;top:100px; }
-.toc h4 { font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--c-muted);margin-bottom:.85rem; }
-.toc-list { list-style:none;display:flex;flex-direction:column;gap:.35rem; }
-.toc-list a { font-size:.82rem;color:var(--c-muted);display:flex;align-items:flex-start;gap:.5rem;line-height:1.4;transition:color .2s; }
-.toc-list a:hover,.toc-list a.toc-active { color:var(--c-teal);font-weight:600; }
-.toc-list a::before { content:'';width:3px;height:3px;background:currentColor;border-radius:50%;flex-shrink:0;margin-top:.55em; }
-
-/* Article body */
-.post-content { font-size:1.05rem;line-height:1.85;color:var(--c-ink-3); }
-.post-content h2 { font-family:'Playfair Display',serif;font-size:1.65rem;font-weight:700;color:var(--c-ink);margin:2.5rem 0 1rem;letter-spacing:-.02em;scroll-margin-top:100px; }
-.post-content h3 { font-size:1.2rem;font-weight:700;color:var(--c-ink);margin:2rem 0 .75rem;scroll-margin-top:100px; }
-.post-content p { margin-bottom:1.5rem; }
-.post-content ul,.post-content ol { margin:0 0 1.5rem 1.5rem; }
-.post-content li { margin-bottom:.5rem; }
-.post-content a { color:var(--c-teal);text-decoration:underline;text-underline-offset:3px; }
-.post-content strong { color:var(--c-ink);font-weight:700; }
-.post-content blockquote { border-left:4px solid var(--c-teal);padding:1rem 1.5rem;margin:2rem 0;background:var(--c-teal-pale);border-radius:0 var(--r-lg) var(--r-lg) 0;font-style:italic;color:var(--c-ink-3);font-size:1.05rem; }
-.post-content img { width:100%;border-radius:12px;margin:1.5rem 0; }
-.post-content pre { background:#0f1923;color:#e2eaee;padding:1.5rem;border-radius:12px;overflow-x:auto;margin:1.5rem 0;font-size:.88rem;line-height:1.6; }
-.post-content code { background:#f0f4f8;padding:.15rem .45rem;border-radius:4px;font-size:.88em;font-family:'Courier New',monospace; }
-.post-content pre code { background:transparent;padding:0;font-size:inherit; }
-.post-content table { width:100%;border-collapse:collapse;margin:1.5rem 0;font-size:.9rem; }
-.post-content th { background:var(--c-teal);color:#fff;padding:.75rem 1rem;text-align:left; }
-.post-content td { padding:.65rem 1rem;border-bottom:1px solid var(--c-border); }
-.post-content tr:hover td { background:#f7fafc; }
-
-/* Share buttons */
-.share-bar { display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;padding:1.5rem 0;border-top:1px solid var(--c-border);border-bottom:1px solid var(--c-border);margin:2.5rem 0; }
-.share-bar span { font-size:.82rem;font-weight:700;color:var(--c-muted);text-transform:uppercase;letter-spacing:.08em; }
-.share-btn { display:inline-flex;align-items:center;gap:.5rem;padding:.5rem 1.1rem;border-radius:9999px;font-size:.82rem;font-weight:600;cursor:pointer;border:1.5px solid var(--c-border);background:#fff;transition:all .2s; }
-.share-btn:hover { transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.1); }
-
-/* Author card */
-.author-card { display:flex;align-items:flex-start;gap:1.25rem;background:#f7fafc;border-radius:16px;padding:1.5rem;margin:2.5rem 0;border:1px solid var(--c-border); }
-.author-avatar { width:56px;height:56px;background:linear-gradient(135deg,var(--c-teal),var(--c-teal-mid));border-radius:50%;display:grid;place-items:center;color:#fff;font-size:1.4rem;font-weight:700;flex-shrink:0; }
-.author-name { font-weight:700;color:var(--c-ink);font-size:1rem; }
-.author-role { font-size:.82rem;color:var(--c-teal);font-weight:500;margin-top:2px; }
-.author-bio { font-size:.875rem;color:var(--c-muted);line-height:1.6;margin-top:.5rem; }
-
-/* FAQ */
-.post-faq { margin-top:3rem; }
-.post-faq h2 { font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:var(--c-ink);margin-bottom:1.25rem; }
-.faq-item { border-bottom:1px solid var(--c-border); }
-.faq-btn { width:100%;display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1.1rem 0;font-size:.95rem;font-weight:600;color:var(--c-ink);cursor:pointer;background:none;border:none;text-align:left;font-family:inherit;transition:color .2s; }
-.faq-btn:hover,.faq-btn[aria-expanded=true] { color:var(--c-teal); }
-.faq-chevron { flex-shrink:0;transition:transform .25s;color:var(--c-muted); }
-.faq-btn[aria-expanded=true] .faq-chevron { transform:rotate(180deg);color:var(--c-teal); }
-.faq-ans { display:grid;grid-template-rows:0fr;transition:grid-template-rows .25s; }
-.faq-ans > div { overflow:hidden; }
-.faq-item.open .faq-ans { grid-template-rows:1fr; }
-.faq-ans-inner { padding-bottom:1.1rem;color:var(--c-muted);font-size:.9rem;line-height:1.7; }
-
-/* Related posts */
-.related-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin-top:1.5rem; }
-.related-card { background:#fff;border:1px solid var(--c-border);border-radius:12px;overflow:hidden;transition:transform .2s,box-shadow .2s; }
-.related-card:hover { transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.08); }
-.related-card img { width:100%;aspect-ratio:16/9;object-fit:cover;display:block; }
-.related-card-body { padding:1rem; }
-.related-card-title { font-weight:700;color:var(--c-ink);font-size:.875rem;line-height:1.4;margin-bottom:.35rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden; }
-.related-card-meta { font-size:.75rem;color:var(--c-muted); }
-
-/* Prev/Next nav */
-.post-nav { display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-top:3rem;padding-top:2rem;border-top:1px solid var(--c-border); }
-.post-nav-item { background:#fff;border:1px solid var(--c-border);border-radius:12px;padding:1.25rem;transition:all .2s;display:block;text-decoration:none; }
-.post-nav-item:hover { border-color:var(--c-teal);transform:translateY(-2px);box-shadow:0 8px 24px rgba(13,110,122,.08); }
-.post-nav-dir { font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--c-muted);margin-bottom:.4rem; }
-.post-nav-title { font-weight:700;color:var(--c-ink);font-size:.9rem;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden; }
-.post-nav-item:last-child { text-align:right; }
-
-@media(max-width:900px){.post-layout{grid-template-columns:1fr;}.toc{position:static;}.related-grid{grid-template-columns:1fr 1fr;}}
-@media(max-width:600px){.related-grid{grid-template-columns:1fr;}.post-nav{grid-template-columns:1fr;}.post-hero-title{font-size:1.6rem;}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.post-hero{background:linear-gradient(135deg,#073f47,#0d6e7a);padding:clamp(3rem,7vw,5rem) 0;}
+.post-back{display:inline-flex;align-items:center;gap:.5rem;color:rgba(255,255,255,.7);font-size:.85rem;margin-bottom:1.5rem;text-decoration:none;}
+.post-back:hover{color:#fff;}
+.post-cat-badge{display:inline-block;padding:.3rem .9rem;border-radius:9999px;font-size:.72rem;font-weight:700;margin-bottom:1rem;background:rgba(255,255,255,.15);color:#fff;}
+.post-hero-title{font-family:'Playfair Display',serif;font-size:clamp(1.75rem,4vw,2.75rem);font-weight:700;color:#fff;line-height:1.15;letter-spacing:-.025em;margin-bottom:1rem;}
+.post-hero-meta{display:flex;flex-wrap:wrap;gap:1.25rem;color:rgba(255,255,255,.7);font-size:.85rem;}
+.post-hero-meta span{display:flex;align-items:center;gap:.4rem;}
+.post-featured-img{width:100%;max-width:900px;margin:0 auto;display:block;border-radius:0 0 20px 20px;max-height:480px;object-fit:cover;}
+.post-body{max-width:780px;margin:0 auto;padding:clamp(2.5rem,5vw,4rem) 1.5rem;}
+.post-content{font-size:1.05rem;line-height:1.85;color:#3d5165;}
+.post-content h2{font-family:'Playfair Display',serif;font-size:1.65rem;font-weight:700;color:#0f1923;margin:2.5rem 0 1rem;}
+.post-content h3{font-size:1.2rem;font-weight:700;color:#0f1923;margin:2rem 0 .75rem;}
+.post-content p{margin-bottom:1.5rem;}
+.post-content ul,.post-content ol{margin:0 0 1.5rem 1.5rem;}
+.post-content li{margin-bottom:.5rem;}
+.post-content a{color:#0d6e7a;text-decoration:underline;}
+.post-content strong{color:#0f1923;font-weight:700;}
+.post-content blockquote{border-left:4px solid #0d6e7a;padding:1rem 1.5rem;margin:2rem 0;background:#eef7f9;border-radius:0 12px 12px 0;font-style:italic;}
+.post-content img{width:100%;border-radius:12px;margin:1.5rem 0;}
+.post-content pre{background:#0f1923;color:#e2eaee;padding:1.5rem;border-radius:12px;overflow-x:auto;margin:1.5rem 0;font-size:.88rem;}
+.post-content table{width:100%;border-collapse:collapse;margin:1.5rem 0;}
+.post-content th{background:#0d6e7a;color:#fff;padding:.75rem 1rem;text-align:left;}
+.post-content td{padding:.65rem 1rem;border-bottom:1px solid #e2eaee;}
+.share-bar{display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;padding:1.5rem 0;border-top:1px solid #e2eaee;border-bottom:1px solid #e2eaee;margin:2.5rem 0;}
+.share-bar span{font-size:.82rem;font-weight:700;color:#64788a;text-transform:uppercase;letter-spacing:.08em;}
+.share-btn{display:inline-flex;align-items:center;gap:.5rem;padding:.5rem 1.1rem;border-radius:9999px;font-size:.82rem;font-weight:600;cursor:pointer;border:1.5px solid #e2eaee;background:#fff;transition:all .2s;}
+.share-btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.1);}
+.author-card{display:flex;align-items:flex-start;gap:1.25rem;background:#f7fafc;border-radius:16px;padding:1.5rem;margin:2.5rem 0;border:1px solid #e2eaee;}
+.author-avatar{width:56px;height:56px;background:linear-gradient(135deg,#0d6e7a,#1a8fa8);border-radius:50%;display:grid;place-items:center;color:#fff;font-size:1.4rem;font-weight:700;flex-shrink:0;}
+.author-name{font-weight:700;color:#0f1923;font-size:1rem;}
+.author-role{font-size:.82rem;color:#0d6e7a;font-weight:500;margin-top:2px;}
+.author-bio{font-size:.875rem;color:#64788a;line-height:1.6;margin-top:.5rem;}
+.faq-section{margin-top:3rem;}
+.faq-section h2{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:#0f1923;margin-bottom:1.25rem;}
+.faq-item{border-bottom:1px solid #e2eaee;}
+.faq-btn{width:100%;display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1.1rem 0;font-size:.95rem;font-weight:600;color:#0f1923;cursor:pointer;background:none;border:none;text-align:left;font-family:inherit;}
+.faq-btn:hover{color:#0d6e7a;}
+.faq-ans{display:none;padding-bottom:1.1rem;color:#64788a;font-size:.9rem;line-height:1.7;}
+.faq-ans.open{display:block;}
+.related-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin-top:1.5rem;}
+.related-card{background:#fff;border:1px solid #e2eaee;border-radius:12px;overflow:hidden;transition:transform .2s;text-decoration:none;display:block;}
+.related-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.08);}
+.related-card-img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;}
+.related-card-body{padding:1rem;}
+.related-card-title{font-weight:700;color:#0f1923;font-size:.875rem;line-height:1.4;margin-bottom:.35rem;}
+.related-card-meta{font-size:.75rem;color:#64788a;}
+.post-nav{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-top:3rem;padding-top:2rem;border-top:1px solid #e2eaee;}
+.post-nav-item{background:#fff;border:1px solid #e2eaee;border-radius:12px;padding:1.25rem;transition:all .2s;display:block;text-decoration:none;}
+.post-nav-item:hover{border-color:#0d6e7a;transform:translateY(-2px);}
+.post-nav-dir{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#64788a;margin-bottom:.4rem;}
+.post-nav-title{font-weight:700;color:#0f1923;font-size:.9rem;line-height:1.4;}
+.post-nav-item:last-child{text-align:right;}
+@media(max-width:600px){.related-grid{grid-template-columns:1fr;}.post-nav{grid-template-columns:1fr;}}
 </style>
 </head>
 <body data-page="blog">
 <div data-inc="partials/header.html"></div>
 <main>
 
-<!-- Loading -->
-<div id="postLoading" style="text-align:center;padding:5rem;color:var(--c-muted);">
+<div id="postLoading" style="text-align:center;padding:5rem;color:#64788a;">
   <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin:0 auto 1rem;display:block;animation:spin 1s linear infinite;" stroke-linecap="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
   Loading article…
 </div>
-<style>@keyframes spin{to{transform:rotate(360deg)}}</style>
 
-<!-- 404 -->
 <div id="post404" style="display:none;text-align:center;padding:5rem;">
-  <h2 style="font-size:2rem;color:var(--c-ink);margin-bottom:1rem;">Post Not Found</h2>
-  <p style="color:var(--c-muted);margin-bottom:2rem;">This article doesn't exist or has been removed.</p>
-  <a href="blog.html" class="btn btn-primary">← Back to Blog</a>
+  <h2 style="font-size:2rem;color:#0f1923;margin-bottom:1rem;">Post Not Found</h2>
+  <p style="color:#64788a;margin-bottom:2rem;">This article doesn't exist or has been removed.</p>
+  <a href="blog.html" class="btn btn-primary">Back to Blog</a>
 </div>
 
-<!-- Post content -->
 <div id="postWrap" style="display:none;">
-
-  <!-- Hero -->
   <section class="post-hero">
-    <div class="container post-hero-inner">
+    <div class="container">
       <a href="blog.html" class="post-back">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
         Back to Blog
       </a>
-      <span id="postCat" class="post-cat-badge"></span>
+      <div id="postCat" class="post-cat-badge"></div>
       <h1 class="post-hero-title" id="postTitle"></h1>
       <div class="post-hero-meta">
         <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span id="postAuthor"></span></span>
         <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span id="postDate"></span></span>
         <span id="postRead"></span>
-        <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg><span id="postViews"></span> views</span>
       </div>
     </div>
   </section>
 
-  <!-- Featured image -->
   <div id="postImgWrap" style="display:none;">
     <img id="postImg" src="" alt="" class="post-featured-img"/>
   </div>
 
-  <!-- Layout: TOC + Content -->
-  <div class="post-layout" style="padding-inline:var(--px);">
-
-    <!-- TOC -->
-    <aside class="toc" id="tocWrap">
-      <h4>Contents</h4>
-      <ul class="toc-list" id="tocList"></ul>
-      <div style="margin-top:2rem;padding:1.25rem;background:var(--c-teal-pale);border-radius:12px;">
-        <div style="font-size:.78rem;font-weight:700;color:var(--c-teal);margin-bottom:.5rem;">Need urgent care?</div>
-        <a href="tel:5202322525" class="btn btn-primary btn-sm" style="width:100%;justify-content:center;">Call 520-232-2525</a>
-      </div>
-    </aside>
-
-    <!-- Article body -->
-    <div>
-      <!-- Social share -->
-      <div class="share-bar" id="shareBar">
-        <span>Share:</span>
-        <button class="share-btn" onclick="share('twitter')" style="color:#1DA1F2;border-color:#1DA1F2;">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"/></svg>
-          Twitter
-        </button>
-        <button class="share-btn" onclick="share('facebook')" style="color:#1877F2;border-color:#1877F2;">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
-          Facebook
-        </button>
-        <button class="share-btn" onclick="share('copy')">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-          Copy Link
-        </button>
-      </div>
-
-      <div class="post-content" id="postContent"></div>
-
-      <!-- Author -->
-      <div class="author-card">
-        <div class="author-avatar" id="authorAvatar"></div>
-        <div>
-          <div class="author-name" id="authorName"></div>
-          <div class="author-role">Medical Team · Sanova Urgent Care</div>
-          <div class="author-bio">Board-certified medical professionals at Sanova Urgent Care, Tucson, AZ. Committed to providing fast, compassionate walk-in care for the whole family.</div>
-        </div>
-      </div>
-
-      <!-- FAQ -->
-      <div class="post-faq" id="postFaq" style="display:none;">
-        <h2>Frequently Asked Questions</h2>
-        <div id="faqItems"></div>
-      </div>
-
-      <!-- Share again -->
-      <div class="share-bar" style="margin-top:2rem;">
-        <span>Share this article:</span>
-        <button class="share-btn" onclick="share('twitter')" style="color:#1DA1F2;border-color:#1DA1F2;">Twitter</button>
-        <button class="share-btn" onclick="share('facebook')" style="color:#1877F2;border-color:#1877F2;">Facebook</button>
-        <button class="share-btn" onclick="share('copy')">Copy Link</button>
-      </div>
-
-      <!-- Prev/Next -->
-      <div class="post-nav" id="postNav"></div>
+  <div class="post-body">
+    <div class="share-bar">
+      <span>Share:</span>
+      <button class="share-btn" onclick="doShare('twitter')" style="color:#1DA1F2;border-color:#1DA1F2;">Twitter</button>
+      <button class="share-btn" onclick="doShare('facebook')" style="color:#1877F2;border-color:#1877F2;">Facebook</button>
+      <button class="share-btn" id="copyBtn" onclick="doShare('copy')">Copy Link</button>
     </div>
+
+    <div class="post-content" id="postContent"></div>
+
+    <div class="author-card">
+      <div class="author-avatar" id="authorAvatar"></div>
+      <div>
+        <div class="author-name" id="authorName"></div>
+        <div class="author-role">Medical Team · Sanova Urgent Care</div>
+        <div class="author-bio">Board-certified medical professionals at Sanova Urgent Care, Tucson, AZ. Committed to providing fast, compassionate walk-in care for the whole family.</div>
+      </div>
+    </div>
+
+    <div class="faq-section" id="postFaq" style="display:none;">
+      <h2>Frequently Asked Questions</h2>
+      <div id="faqItems"></div>
+    </div>
+
+    <div class="post-nav" id="postNav"></div>
   </div>
 
-  <!-- Related posts -->
-  <section class="section bg-bg" id="relatedSection" style="display:none;">
+  <section id="relatedSection" style="display:none;background:#f7fafc;padding:3rem 0;">
     <div class="container">
-      <h2 style="font-size:1.35rem;font-weight:700;color:var(--c-ink);margin-bottom:1.5rem;">Related Articles</h2>
+      <h2 style="font-size:1.35rem;font-weight:700;color:#0f1923;margin-bottom:1.5rem;">Related Articles</h2>
       <div class="related-grid" id="relatedGrid"></div>
     </div>
   </section>
 </div>
 
-<!-- CTA -->
 <section class="section cta-section">
   <div class="container cta-inner section-sm" style="padding-block:clamp(3rem,6vw,5rem);">
     <h2 class="cta-title">Walk In Today — <em>No Appointment Needed</em></h2>
@@ -241,7 +155,6 @@
 <div data-inc="partials/faq.html"></div>
 <div data-inc="partials/footer.html"></div>
 <script src="js/main.js"></script>
-
 <script>
 (function(){
   const SB_URL='https://fogkdxevecwnqbmezdnu.supabase.co';
@@ -256,127 +169,62 @@
     return;
   }
 
-  function fmtDate(d){return new Date(d).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});}
-  function readTime(c){return Math.max(1,Math.round((c||'').replace(/<[^>]+>/g,'').split(/\s+/).length/200))+' min read';}
-
-  function buildTOC(content){
-    const tmp=document.createElement('div');tmp.innerHTML=content;
-    const headings=tmp.querySelectorAll('h2,h3');
-    const toc=document.getElementById('tocList');
-    toc.innerHTML='';
-    headings.forEach((h,i)=>{
-      if(!h.id)h.id='heading-'+i;
-      const li=document.createElement('li');
-      const a=document.createElement('a');
-      a.href='#'+h.id;a.textContent=h.textContent;
-      if(h.tagName==='H3')a.style.paddingLeft='1rem';
-      li.appendChild(a);toc.appendChild(li);
-    });
-    if(!headings.length)document.getElementById('tocWrap').style.display='none';
-    // Update actual content headings with IDs
-    const contentDiv=document.getElementById('postContent');
-    contentDiv.querySelectorAll('h2,h3').forEach((h,i)=>{if(!h.id)h.id='heading-'+i;});
-
-    // Scroll spy
-    const observer=new IntersectionObserver(entries=>{
-      entries.forEach(e=>{
-        if(e.isIntersecting){
-          document.querySelectorAll('.toc-list a').forEach(a=>a.classList.remove('toc-active'));
-          const active=toc.querySelector(`a[href="#${e.target.id}"]`);
-          if(active)active.classList.add('toc-active');
-        }
-      });
-    },{rootMargin:'-80px 0px -70% 0px'});
-    contentDiv.querySelectorAll('h2,h3').forEach(h=>observer.observe(h));
+  function fmtDate(d){
+    return new Date(d).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
   }
 
-  function buildFaq(faqs){
-    if(!faqs||!faqs.length)return;
-    document.getElementById('postFaq').style.display='block';
-    document.getElementById('faqItems').innerHTML=faqs.map((f,i)=>`
-      <div class="faq-item" id="fi${i}">
-        <button class="faq-btn" aria-expanded="false" onclick="toggleFaqItem(${i})">
-          ${f.q}
-          <svg class="faq-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
-        </button>
-        <div class="faq-ans"><div><div class="faq-ans-inner">${f.a}</div></div></div>
-      </div>`).join('');
+  function readTime(c){
+    return Math.max(1,Math.round((c||'').replace(/<[^>]+>/g,'').split(/\s+/).length/200))+' min read';
   }
 
-  window.toggleFaqItem=function(i){
-    const item=document.getElementById('fi'+i);
-    const btn=item.querySelector('.faq-btn');
-    const open=item.classList.toggle('open');
-    btn.setAttribute('aria-expanded',open);
-  };
-
-  window.share=function(platform){
+  window.doShare=function(platform){
     const url=encodeURIComponent(location.href);
     const title=encodeURIComponent(document.getElementById('postTitle').textContent);
-    if(platform==='twitter')window.open(`https://twitter.com/intent/tweet?url=${url}&text=${title}`,'_blank');
-    else if(platform==='facebook')window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`,'_blank');
-    else if(platform==='copy'){navigator.clipboard.writeText(location.href).then(()=>{showCopyMsg();});}
+    if(platform==='twitter') window.open('https://twitter.com/intent/tweet?url='+url+'&text='+title,'_blank');
+    else if(platform==='facebook') window.open('https://www.facebook.com/sharer/sharer.php?u='+url,'_blank');
+    else if(platform==='copy'){
+      navigator.clipboard.writeText(location.href).then(function(){
+        var btn=document.getElementById('copyBtn');
+        btn.textContent='Copied!';
+        setTimeout(function(){btn.textContent='Copy Link';},2000);
+      });
+    }
   };
 
-  function showCopyMsg(){
-    const b=document.querySelectorAll('.share-btn');
-    b.forEach(btn=>{if(btn.textContent.trim()==='Copy Link'){const orig=btn.textContent;btn.textContent='✓ Copied!';setTimeout(()=>btn.textContent=orig,2000);}});
-  }
+  window.toggleFaq=function(btn){
+    var ans=btn.nextElementSibling;
+    var isOpen=ans.classList.contains('open');
+    document.querySelectorAll('.faq-ans').forEach(function(a){a.classList.remove('open');});
+    if(!isOpen) ans.classList.add('open');
+  };
 
   async function load(){
-    const {data:post,error}=await sb.from('blogs')
-      .select('*')
-      .eq('slug',slug)
-      .single();
+    var result=await sb.from('blogs').select('*').eq('slug',slug).single();
+    var post=result.data;
+    var error=result.error;
 
     document.getElementById('postLoading').style.display='none';
 
-    if(error||!post){document.getElementById('post404').style.display='block';return;}
+    if(error||!post){
+      document.getElementById('post404').style.display='block';
+      return;
+    }
 
-    // Track view
+    // Update views
     await sb.from('blogs').update({views:(post.views||0)+1}).eq('id',post.id);
-    await sb.from('analytics').insert({blog_id:post.id,views:1,visitors:1});
 
-    // Meta tags
-    const title=post.meta_title||post.title;
-    const desc=post.meta_description||post.excerpt||'';
-    document.getElementById('pageTitle').textContent=title+' | Sanova Urgent Care';
-    document.getElementById('pageDesc').content=desc;
-    document.getElementById('ogTitle').content=title;
-    document.getElementById('ogDesc').content=desc;
-    document.getElementById('twTitle').content=title;
-    document.getElementById('twDesc').content=desc;
-    if(post.featured_image){document.getElementById('ogImage').content=post.featured_image;}
-    document.getElementById('canonicalLink').href=location.href;
+    // Meta
+    document.getElementById('pageTitle').textContent=(post.meta_title||post.title)+' | Sanova Urgent Care';
+    document.getElementById('pageDesc').content=post.meta_description||post.excerpt||'';
 
-    // JSON-LD Article schema
-    const schema={
-      '@context':'https://schema.org','@type':'Article',
-      headline:post.title,description:post.excerpt||'',
-      author:{@type:'Person',name:post.author||'Sanova Medical Team'},
-      publisher:{@type:'Organization',name:'Sanova Urgent Care',url:'https://fogkdxevecwnqbmezdnu.supabase.co'},
-      datePublished:post.published_at||post.created_at,
-      dateModified:post.updated_at||post.created_at,
-      ...(post.featured_image?{image:post.featured_image}:{}),
-    };
-    const faqSchema=post.faq?.length?{
-      '@context':'https://schema.org','@type':'FAQPage',
-      mainEntity:post.faq.map(f=>({@type:'Question',name:f.q,acceptedAnswer:{@type:'Answer',text:f.a}}))
-    }:null;
-    const schemaScript=document.createElement('script');
-    schemaScript.type='application/ld+json';
-    schemaScript.textContent=JSON.stringify([schema,...(faqSchema?[faqSchema]:[])]);
-    document.head.appendChild(schemaScript);
-
-    // Fill hero
-    document.getElementById('postCat').textContent=post.categories?.name||'Health Tips';
+    // Hero
+    document.getElementById('postCat').textContent='Health Tips';
     document.getElementById('postTitle').textContent=post.title;
     document.getElementById('postAuthor').textContent=post.author||'Sanova Medical Team';
     document.getElementById('postDate').textContent=fmtDate(post.published_at||post.created_at);
     document.getElementById('postRead').textContent=readTime(post.content);
-    document.getElementById('postViews').textContent=((post.views||0)+1).toLocaleString();
 
-    // Featured image
+    // Image
     if(post.featured_image){
       document.getElementById('postImg').src=post.featured_image;
       document.getElementById('postImg').alt=post.title;
@@ -385,46 +233,43 @@
 
     // Content
     document.getElementById('postContent').innerHTML=post.content||'';
-    buildTOC(post.content||'');
 
     // Author
-    const author=post.author||'Sanova Medical Team';
+    var author=post.author||'Sanova Medical Team';
     document.getElementById('authorAvatar').textContent=author.charAt(0).toUpperCase();
     document.getElementById('authorName').textContent=author;
 
     // FAQ
-    buildFaq(post.faq);
-
-    // Related posts
-    const {data:related}=await sb.from('blogs')
-      .select('id,title,slug,featured_image,published_at,created_at,categories(name)')
-      .eq('published',true)
-      .eq('category_id',post.category_id)
-      .neq('id',post.id)
-      .limit(3);
-
-    if(related?.length){
-      document.getElementById('relatedSection').style.display='block';
-      document.getElementById('relatedGrid').innerHTML=related.map(r=>`
-        <a href="blog-post.html?slug=${r.slug}" class="related-card" style="text-decoration:none;">
-          ${r.featured_image?`<img src="${r.featured_image}" alt="${r.title}" loading="lazy">`:'<div style="aspect-ratio:16/9;background:linear-gradient(135deg,#073f47,#0d6e7a);"></div>'}
-          <div class="related-card-body">
-            <div class="related-card-title">${r.title}</div>
-            <div class="related-card-meta">${fmtDate(r.published_at||r.created_at)}</div>
-          </div>
-        </a>`).join('');
+    if(post.faq&&post.faq.length){
+      document.getElementById('postFaq').style.display='block';
+      document.getElementById('faqItems').innerHTML=post.faq.map(function(f){
+        return '<div class="faq-item"><button class="faq-btn" onclick="toggleFaq(this)">'+f.q+
+          '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>'+
+          '<div class="faq-ans">'+f.a+'</div></div>';
+      }).join('');
     }
 
-    // Prev / Next
-    const [prevRes,nextRes]=await Promise.all([
-      sb.from('blogs').select('title,slug').eq('published',true).lt('published_at',post.published_at||post.created_at).order('published_at',{ascending:false}).limit(1),
-      sb.from('blogs').select('title,slug').eq('published',true).gt('published_at',post.published_at||post.created_at).order('published_at',{ascending:true}).limit(1),
-    ]);
-    const prev=prevRes.data?.[0],next=nextRes.data?.[0];
-    document.getElementById('postNav').innerHTML=[
-      prev?`<a href="blog-post.html?slug=${prev.slug}" class="post-nav-item"><div class="post-nav-dir">← Previous</div><div class="post-nav-title">${prev.title}</div></a>`:'<div></div>',
-      next?`<a href="blog-post.html?slug=${next.slug}" class="post-nav-item" style="text-align:right;"><div class="post-nav-dir">Next →</div><div class="post-nav-title">${next.title}</div></a>`:'<div></div>',
-    ].join('');
+    // Related
+    var rel=await sb.from('blogs').select('title,slug,featured_image,published_at,created_at').eq('published',true).neq('id',post.id).limit(3);
+    if(rel.data&&rel.data.length){
+      document.getElementById('relatedSection').style.display='block';
+      document.getElementById('relatedGrid').innerHTML=rel.data.map(function(r){
+        return '<a href="blog-post.html?slug='+r.slug+'" class="related-card">'+
+          (r.featured_image?'<img src="'+r.featured_image+'" class="related-card-img" loading="lazy" alt="'+r.title+'">'
+          :'<div style="aspect-ratio:16/9;background:linear-gradient(135deg,#073f47,#0d6e7a);"></div>')+
+          '<div class="related-card-body"><div class="related-card-title">'+r.title+'</div>'+
+          '<div class="related-card-meta">'+fmtDate(r.published_at||r.created_at)+'</div></div></a>';
+      }).join('');
+    }
+
+    // Prev/Next
+    var prevRes=await sb.from('blogs').select('title,slug').eq('published',true).lt('created_at',post.created_at).order('created_at',{ascending:false}).limit(1);
+    var nextRes=await sb.from('blogs').select('title,slug').eq('published',true).gt('created_at',post.created_at).order('created_at',{ascending:true}).limit(1);
+    var prev=prevRes.data&&prevRes.data[0];
+    var next=nextRes.data&&nextRes.data[0];
+    document.getElementById('postNav').innerHTML=
+      (prev?'<a href="blog-post.html?slug='+prev.slug+'" class="post-nav-item"><div class="post-nav-dir">Previous</div><div class="post-nav-title">'+prev.title+'</div></a>':'<div></div>')+
+      (next?'<a href="blog-post.html?slug='+next.slug+'" class="post-nav-item" style="text-align:right;"><div class="post-nav-dir">Next</div><div class="post-nav-title">'+next.title+'</div></a>':'<div></div>');
 
     document.getElementById('postWrap').style.display='block';
   }
