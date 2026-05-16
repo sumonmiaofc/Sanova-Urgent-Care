@@ -316,7 +316,7 @@
   async function load(){
     const [{data:cats},{data:posts}]=await Promise.all([
       sb.from('categories').select('id,name').order('name'),
-      sb.from('blogs').select('id,title,slug,excerpt,content,featured_image,author,published_at,created_at,categories(id,name)').eq('published',true).order('published_at',{ascending:false})
+      sb.from('blogs').select('id,title,slug,excerpt,content,featured_image,author,published_at,created_at,categories(id,name)') .order('published_at',{ascending:false})
     ]);
 
     document.getElementById('blogLoading').style.display='none';
