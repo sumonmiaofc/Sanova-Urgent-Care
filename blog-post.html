@@ -1144,14 +1144,14 @@
     var prev=pr.data&&pr.data[0];
     var next=nx.data&&nx.data[0];
     document.getElementById('spNav').innerHTML=
-      (prev?'<a href="blog-post.html?slug='+prev.slug+'" class="sp-nav-item"><div class="sp-nav-dir"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Previous</div><div class="sp-nav-t">'+prev.title+'</div></a>':'<div></div>')+
-      (next?'<a href="blog-post.html?slug='+next.slug+'" class="sp-nav-item"><div class="sp-nav-dir">Next <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div><div class="sp-nav-t">'+next.title+'</div></a>':'<div></div>');
+      (prev?'<a href="/blog/'+prev.slug+'" class="sp-nav-item"><div class="sp-nav-dir"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Previous</div><div class="sp-nav-t">'+prev.title+'</div></a>':'<div></div>')+
+      (next?'<a href="/blog/'+next.slug+'" class="sp-nav-item"><div class="sp-nav-dir">Next <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div><div class="sp-nav-t">'+next.title+'</div></a>':'<div></div>');
 
     // Sidebar — Recent
     var recRes=await sb.from('blogs').select('title,slug,featured_image,published_at,created_at').eq('published',true).neq('id',post.id).order('created_at',{ascending:false}).limit(5);
     var recent=recRes.data||[];
     document.getElementById('spRecent').innerHTML=recent.length?recent.map(function(r){
-      return '<a href="blog-post.html?slug='+r.slug+'" class="sp-recent-item">'+
+      return '<a href="/blog/'+r.slug+'" class="sp-recent-item">'+
         (r.featured_image
           ?'<img src="'+r.featured_image+'" class="sp-recent-thumb" loading="lazy" alt="'+r.title+'">'
           :'<div class="sp-recent-thumb"></div>')+
@@ -1179,7 +1179,7 @@
     if(rel.length){
       document.getElementById('spRelated').style.display='block';
       document.getElementById('spRelatedGrid').innerHTML=rel.map(function(r){
-        return '<a href="blog-post.html?slug='+r.slug+'" class="sp-rel-card">'+
+        return '<a href="/blog/'+r.slug+'" class="sp-rel-card">'+
           '<div class="sp-rel-card-img-wrap">'+
           (r.featured_image
             ?'<img src="'+r.featured_image+'" alt="'+r.title+'" class="sp-rel-card-img" loading="lazy">'

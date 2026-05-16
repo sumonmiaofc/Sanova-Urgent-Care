@@ -224,7 +224,7 @@
   }
 
   function featuredHTML(p){
-    return`<a href="blog-post.html?slug=${p.slug}" class="blog-featured" style="text-decoration:none;">
+    return`<a href="/blog/${p.slug}" class="blog-featured" style="text-decoration:none;">
       ${imgOrPlaceholder(p.featured_image,p.categories?.name,'blog-featured-img')}
       <div class="blog-featured-body">
         <span class="blog-featured-tag" ${tagStyle(p.categories?.name)}>${p.categories?.name||'Health Tips'} · Featured</span>
@@ -242,14 +242,14 @@
 
   function cardHTML(p){
     return`<article class="blog-card">
-      <a href="blog-post.html?slug=${p.slug}">${imgOrPlaceholder(p.featured_image,p.categories?.name,'blog-card-img')}</a>
+      <a href="/blog/${p.slug}">${imgOrPlaceholder(p.featured_image,p.categories?.name,'blog-card-img')}</a>
       <div class="blog-card-body">
         <span class="blog-card-tag" ${tagStyle(p.categories?.name)}>${p.categories?.name||'Health Tips'}</span>
-        <div class="blog-card-title"><a href="blog-post.html?slug=${p.slug}">${p.title}</a></div>
+        <div class="blog-card-title"><a href="/blog/${p.slug}">${p.title}</a></div>
         <div class="blog-card-excerpt">${p.excerpt||''}</div>
         <div class="blog-card-meta">
           <span>${fmtDate(p.published_at||p.created_at)} · ${readTime(p.content)}</span>
-          <a href="blog-post.html?slug=${p.slug}" class="blog-card-read">Read <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+          <a href="/blog/${p.slug}" class="blog-card-read">Read <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
         </div>
       </div>
     </article>`;
