@@ -18,17 +18,16 @@
 
 /* ---- Hero ---- */
 .sp-hero {
-  position: relative;
   background: linear-gradient(135deg, #052e35 0%, #073f47 50%, #0d6e7a 100%);
+  padding: clamp(3rem, 6vw, 5rem) 0 0;
+  position: relative;
   overflow: hidden;
-  padding: clamp(4rem, 8vw, 7rem) 0 0;
 }
 .sp-hero::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 70% 50%, rgba(26,143,168,.25), transparent 60%),
-              radial-gradient(circle at 20% 80%, rgba(7,63,71,.5), transparent 50%);
+  background: radial-gradient(circle at 70% 50%, rgba(26,143,168,.2), transparent 60%);
   pointer-events: none;
 }
 .sp-hero-inner {
@@ -37,7 +36,6 @@
   max-width: 860px;
   padding-inline: clamp(1.25rem, 4vw, 2.5rem);
   margin-inline: auto;
-  animation: fadeUp .6s ease both;
 }
 .sp-back {
   display: inline-flex;
@@ -47,25 +45,23 @@
   font-size: .82rem;
   font-weight: 500;
   text-decoration: none;
-  margin-bottom: 2rem;
+  margin-bottom: 1.75rem;
   transition: color .2s;
-  letter-spacing: .02em;
 }
 .sp-back:hover { color: #fff; }
 .sp-back svg { width: 16px; height: 16px; }
-
 .sp-meta-top {
   display: flex;
   align-items: center;
   gap: .75rem;
   flex-wrap: wrap;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1rem;
 }
 .sp-cat {
   display: inline-block;
-  padding: .3rem .9rem;
+  padding: .28rem .85rem;
   border-radius: 9999px;
-  font-size: .7rem;
+  font-size: .68rem;
   font-weight: 700;
   letter-spacing: .08em;
   text-transform: uppercase;
@@ -80,60 +76,53 @@
   align-items: center;
   gap: .35rem;
 }
-
 .sp-title {
   font-family: 'Playfair Display', serif;
-  font-size: clamp(2rem, 4.5vw, 3.25rem);
+  font-size: clamp(1.85rem, 4.5vw, 3rem);
   font-weight: 700;
   color: #fff;
   line-height: 1.12;
   letter-spacing: -.025em;
   margin-bottom: 1.5rem;
 }
-
 .sp-author-row {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  padding: 1.5rem 0;
-  border-top: 1px solid rgba(255,255,255,.1);
+  gap: .85rem;
+  padding: 1.25rem 0;
   flex-wrap: wrap;
 }
 .sp-author-avatar {
-  width: 42px; height: 42px;
+  width: 38px; height: 38px;
   background: linear-gradient(135deg, #0d6e7a, #1a8fa8);
   border-radius: 50%;
   display: grid; place-items: center;
-  color: #fff; font-weight: 700; font-size: 1rem;
+  color: #fff; font-weight: 700; font-size: .9rem;
   flex-shrink: 0;
   border: 2px solid rgba(255,255,255,.2);
 }
-.sp-author-info { flex: 1; }
-.sp-author-name { font-size: .9rem; font-weight: 600; color: #fff; }
-.sp-author-role { font-size: .75rem; color: rgba(255,255,255,.5); margin-top: 1px; }
-.sp-date { font-size: .78rem; color: rgba(255,255,255,.5); margin-left: auto; }
+.sp-author-info { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; }
+.sp-author-name { font-size: .85rem; font-weight: 600; color: rgba(255,255,255,.9); }
+.sp-author-sep { color: rgba(255,255,255,.3); font-size: .85rem; }
+.sp-date { font-size: .8rem; color: rgba(255,255,255,.5); }
 
-/* Featured image — clean card below hero */
-.sp-img-wrap {
-  width: 100%;
-  max-width: 860px;
-  margin: 0 auto;
-  padding-inline: clamp(1.25rem, 4vw, 2.5rem);
-  margin-top: 2.5rem;
+/* Featured image — BELOW hero text, ABOVE content */
+.sp-feat-img-wrap {
   position: relative;
   z-index: 2;
+  max-width: 860px;
+  margin: 2rem auto 0;
+  padding-inline: clamp(1.25rem, 4vw, 2.5rem);
 }
-.sp-img-wrap img {
+.sp-feat-img-wrap img {
   width: 100%;
-  aspect-ratio: 16/7;
+  aspect-ratio: 16/8;
   object-fit: cover;
-  border-radius: 16px;
+  border-radius: 16px 16px 0 0;
   display: block;
-  box-shadow: 0 24px 64px rgba(0,0,0,.3);
-  border: 3px solid rgba(255,255,255,.08);
+  box-shadow: 0 -8px 40px rgba(0,0,0,.2);
 }
 
-/* Wave separator */
 .sp-wave {
   display: block;
   width: 100%;
@@ -438,7 +427,7 @@
 <!-- Main post -->
 <div id="spWrap" style="display:none;">
 
-  <!-- HERO -->
+ <!-- HERO -->
   <div class="sp-hero">
     <div class="sp-hero-inner">
       <a href="blog.html" class="sp-back">
@@ -451,24 +440,25 @@
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
           <span id="spRead"></span>
         </span>
+        <span class="sp-read-time" id="spDate"></span>
       </div>
       <h1 class="sp-title" id="spTitle"></h1>
       <div class="sp-author-row">
         <div class="sp-author-avatar" id="spAv"></div>
         <div class="sp-author-info">
-          <div class="sp-author-name" id="spAuthor"></div>
-          <div class="sp-author-role">Sanova Medical Team</div>
+          <span class="sp-author-name" id="spAuthor"></span>
+          <span class="sp-author-sep">·</span>
+          <span class="sp-author-name" style="font-weight:400;color:rgba(255,255,255,.6);">Sanova Medical Team</span>
         </div>
-        <div class="sp-date" id="spDate"></div>
       </div>
     </div>
 
-    <!-- Featured image inside hero, below text -->
-    <div class="sp-img-wrap" id="spImgWrap" style="display:none;">
+    <!-- Featured image: below title, above wave -->
+    <div class="sp-feat-img-wrap" id="spImgWrap" style="display:none;">
       <img id="spImg" src="" alt=""/>
     </div>
 
-    <!-- Wave -->
+    <!-- Wave separator -->
     <svg class="sp-wave" viewBox="0 0 1440 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M0,40 C360,80 1080,0 1440,40 L1440,60 L0,60 Z" fill="#f7fafc"/>
     </svg>
@@ -481,6 +471,9 @@
       <!-- Article -->
       <article class="sp-article">
         <div class="sp-article-body">
+
+          <!-- Content -->
+          <div class="sp-content" id="spContent"></div>
 
           <!-- Share bar -->
           <div class="sp-share">
@@ -498,9 +491,6 @@
               Copy Link
             </button>
           </div>
-
-          <!-- Content -->
-          <div class="sp-content" id="spContent"></div>
 
           <!-- Author card -->
           <div class="sp-author">
@@ -722,6 +712,7 @@
     }
 
     document.getElementById('spWrap').style.display='block';
+    window.scrollTo(0,0);
   }
 
   load();
