@@ -1,8 +1,15 @@
 {
-  "cleanUrls": true,
+  "cleanUrls": false,
   "trailingSlash": false,
   "rewrites": [
     { "source": "/blog/:slug", "destination": "/blog-post.html?slug=:slug" },
+    { "source": "/blog", "destination": "/blog.html" },
+    { "source": "/contact", "destination": "/contact.html" },
+    { "source": "/services", "destination": "/services.html" },
+    { "source": "/gallery", "destination": "/gallery.html" },
+    { "source": "/meet-the-team", "destination": "/meet-the-team.html" },
+    { "source": "/patient-info", "destination": "/patient-info.html" },
+    { "source": "/iv-hydration", "destination": "/iv-hydration.html" },
     { "source": "/admin", "destination": "/admin/login.html" },
     { "source": "/admin/dashboard", "destination": "/admin/dashboard.html" },
     { "source": "/admin/blogs", "destination": "/admin/blogs.html" },
@@ -27,13 +34,5 @@
     { "source": "/admin/analytics.html", "destination": "/admin/analytics", "permanent": true },
     { "source": "/admin/settings.html", "destination": "/admin/settings", "permanent": true },
     { "source": "/admin/login.html", "destination": "/admin", "permanent": true }
-  ],
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        { "key": "X-Content-Type-Options", "value": "nosniff" }
-      ]
-    }
   ]
 }
